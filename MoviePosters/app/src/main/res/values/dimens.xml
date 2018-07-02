@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Reference:
+https://stackoverflow.com/questions/29128178/how-to-use-dimens-xml-in-android
+-->
+<resources>
+    <dimen name="top_margin">3dp</dimen>
+</resources>
