@@ -38,22 +38,22 @@ public class Movie implements Parcelable {
     private String original_title;
     private String overview;
     private String release_date;
-    private boolean video;
 
     public Movie()
     {
 
     }
 
-    public Movie(String movieTitle, String movieHero, String moviePoster, String overview, String voteAverage, String releaseDate, boolean video)
+    public Movie(int id, String movieTitle, String movieHero, String moviePoster, String overview, String voteAverage, String releaseDate)
     {
+
         this.original_title = movieTitle;
         this.backdrop_path = movieHero;
         this.poster_path = moviePoster;
         this.overview = overview;
         this.vote_average = voteAverage;
         this.release_date = releaseDate;
-        this.video = video;
+        this.id = id;
     }
 
     //this part captures the data from the API
@@ -64,7 +64,7 @@ public class Movie implements Parcelable {
         overview = in.readString();
         vote_average = in.readString();
         release_date = in.readString();
-        video = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        id=in.readInt();
     }
 
     public static final Creator<Movie> CREATOR = new Creator<Movie>() {
@@ -135,13 +135,6 @@ public class Movie implements Parcelable {
         this.release_date = release_date;
     }
 
-    public Boolean getVideo() {
-        return video;
-    }
-
-    public void setVideo(Boolean video) {
-        this.video = video;
-    }
 
     @Override
     public int describeContents() {
@@ -157,6 +150,6 @@ public class Movie implements Parcelable {
         dest.writeString(overview);
         dest.writeString(vote_average);
         dest.writeString(release_date);
-        dest.writeValue(video);
+        dest.writeInt(id);
     }
 }
