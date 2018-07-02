@@ -3,6 +3,7 @@ package com.example.android.movieposters.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -113,6 +114,8 @@ public class MovieDetails extends AppCompatActivity {
         } else {
             Toast.makeText(this, "No Movie Details Available", Toast.LENGTH_SHORT).show();
         }
+
+        initViews();
     }
 
     private void initViews(){
@@ -134,7 +137,7 @@ public class MovieDetails extends AppCompatActivity {
 
         try{
             if (BuildConfig.TMDB_API.isEmpty()){
-                Toast.makeText(getApplicationContext(), "Please obtain your API Key from themoviedb.org", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Enter your API Key in gradle.properties", Toast.LENGTH_SHORT).show();
                 return;
             }
 
