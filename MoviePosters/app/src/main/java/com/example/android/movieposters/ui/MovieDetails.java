@@ -63,6 +63,7 @@ public class MovieDetails extends AppCompatActivity {
 
     String hero_poster, thumbnail, movieName, movieDescription, userRating, releaseDate;
     int movieId;
+    final static String MOVIE_URL = "https://api.themoviedb.org/3/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,7 +134,7 @@ public class MovieDetails extends AppCompatActivity {
 
     private void loadJSON(){
 
-        final String MOVIE_URL = "https://api.themoviedb.org/3/movie/";
+
 
         try{
             if (BuildConfig.TMDB_API.isEmpty()){
@@ -160,8 +161,12 @@ public class MovieDetails extends AppCompatActivity {
             call.enqueue(new Callback<TrailerList>() {
                 @Override
                 public void onResponse(Call<TrailerList> call, Response<TrailerList> response) {
-                    List<Trailer> trailer = response.body().getResults();
-                    trailer_adapter.setTrailerList(trailer);
+                    if(response.isSuccessful()){
+                        List<Trailer> trailer = response.body().getResults();
+                        trailer_adapter.setTrailerList(trailer);
+                    } else{
+                        call.request().url().toString();
+                    }
                 }
 
                 @Override
