@@ -133,7 +133,7 @@ public class MovieDetails extends AppCompatActivity {
 
     private void loadJSON(){
 
-        final String MOVIE_URL = "https://api.themoviedb.org/3/movie/" + movieId + "/videos?api_key=" + BuildConfig.TMDB_API + "&language=en-US";
+        final String MOVIE_URL = "https://api.themoviedb.org/3/movie/";
 
         try{
             if (BuildConfig.TMDB_API.isEmpty()){
@@ -156,7 +156,7 @@ public class MovieDetails extends AppCompatActivity {
             MovieAPI requestService = retrofit.create(MovieAPI.class);
 
 
-            Call<TrailerList> call = requestService.getVideos(movieId);
+            Call<TrailerList> call = requestService.getVideos(movieId, BuildConfig.TMDB_API, "en-US");
             call.enqueue(new Callback<TrailerList>() {
                 @Override
                 public void onResponse(Call<TrailerList> call, Response<TrailerList> response) {
