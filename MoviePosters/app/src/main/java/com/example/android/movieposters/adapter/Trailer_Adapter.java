@@ -43,24 +43,42 @@ public class Trailer_Adapter extends RecyclerView.Adapter<Trailer_Adapter.ViewHo
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        Trailer trailer = trailerList.get(position);
+        final Trailer trailer = trailerList.get(position);
         holder.title.setText(trailerList.get(position).getName());
 
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (position != RecyclerView.NO_POSITION) {
+                mContext.startActivity(new Intent(Intent.ACTION_VIEW,
+                        VideoLinkBuilder.buildVideoUrl(trailer.getKey())));
+                /*if (position != RecyclerView.NO_POSITION) {
                     Trailer clickedDataItem = trailerList.get(position);
                     String videoId = trailerList.get(position).getKey();
                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=" + videoId));
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     intent.putExtra("VIDEO_ID", videoId);
-                    mContext.startActivity(intent);
+                    mContext.startActivity(intent);*/
 
-                    Toast.makeText(v.getContext(), "You clicked " + clickedDataItem.getName(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(v.getContext(), "You clicked " + trailer.getName(), Toast.LENGTH_SHORT).show();
                 }
-            }
-        });
+            });
+      //  });
+    }
+
+    public static class VideoLinkBuilder{
+        public static final String BASE = "www.youtube.com";
+        public static final String BASE_SCHEME ="https";
+        public static final String BASE_PATH = "watch";
+        public static final String VIDEO_QUERY = "v";
+
+        public static Uri buildVideoUrl(String mKey) {
+            return (new Uri.Builder())
+                    .scheme(BASE_SCHEME)
+                    .authority(BASE)
+                    .appendPath(BASE_PATH)
+                    .appendQueryParameter(VIDEO_QUERY, mKey)
+                    .build();
+        }
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
