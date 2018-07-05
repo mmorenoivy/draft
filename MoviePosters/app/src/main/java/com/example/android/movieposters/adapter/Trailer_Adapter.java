@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.example.android.movieposters.BuildConfig;
 import com.example.android.movieposters.R;
 import com.example.android.movieposters.object.Trailer;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.List;
@@ -44,7 +45,12 @@ public class Trailer_Adapter extends RecyclerView.Adapter<Trailer_Adapter.ViewHo
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         final Trailer trailer = trailerList.get(position);
-        holder.title.setText(trailerList.get(position).getName());
+        //holder.title.setText(trailerList.get(position).getName());
+
+        Picasso.with(mContext)
+                .load("http://image.tmdb.org/t/p/w500")
+                .placeholder(R.color.colorPrimaryDark)
+                .into(holder.imageView);
 
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,7 +94,7 @@ public class Trailer_Adapter extends RecyclerView.Adapter<Trailer_Adapter.ViewHo
         public ViewHolder(final View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.title);
-            imageView = (ImageView) itemView.findViewById(R.id.imageView);
+            imageView = (ImageView) itemView.findViewById(R.id.youtube);
         }
     }
 

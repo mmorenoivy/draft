@@ -1,48 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:cardview="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    android:adjustViewBounds="true">
+    cardview:cardCornerRadius="6dp"
+    cardview:cardElevation="1dp"
+    cardview:cardUseCompatPadding="true">
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/card_view"
-        android:layout_height="100dp"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_gravity="center"
-        android:layout_margin="10dp"
-        card_view:cardCornerRadius="0dp">
+        android:layout_height="match_parent"
+        android:id="@+id/parentView">
 
-        <RelativeLayout
+        <ImageView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/youtube"
+            android:contentDescription="Placeholder"
+            android:id="@+id/youtube"/>
 
-            <ImageView
-                android:layout_width="50dp"
-                android:layout_height="100dp"
-                android:gravity="center"
-                android:src="@drawable/youtube"
-                android:id="@+id/imageView"
-                android:layout_marginLeft="20dp"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"/>
 
-            <TextView
-                android:id="@+id/title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingTop="10dp"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="15sp"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@+id/imageView"
-                android:layout_toEndOf="@+id/imageView"/>
+    </RelativeLayout>
 
-        </RelativeLayout>
-
-    </android.support.v7.widget.CardView>
-
-</LinearLayout>
+</android.support.v7.widget.CardView>
