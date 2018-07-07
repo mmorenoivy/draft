@@ -13,11 +13,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.movieposters.BuildConfig;
+import com.example.android.movieposters.adapter.Review_Adapter;
 import com.example.android.movieposters.adapter.Trailer_Adapter;
 import com.example.android.movieposters.api.MovieAPI;
 import com.example.android.movieposters.object.Movie;
 import com.example.android.movieposters.R;
 import com.example.android.movieposters.adapter.Movie_Adapter;
+import com.example.android.movieposters.object.Review;
+import com.example.android.movieposters.object.ReviewList;
 import com.example.android.movieposters.object.Trailer;
 import com.example.android.movieposters.object.TrailerList;
 import com.squareup.picasso.Picasso;
@@ -47,9 +50,12 @@ public class MovieDetails extends AppCompatActivity {
 
     private Movie mMovie;
     private Movie_Adapter movie_adapter;
-    private RecyclerView recyclerView;
+    private RecyclerView recyclerViewTrailer;
+    private RecyclerView recyclerViewReview;
     private Trailer_Adapter trailer_adapter;
     private List<Trailer> trailers;
+    private Review_Adapter review_adapter;
+    private List<Review> reviews;
 
     ImageView poster, hero;
     TextView mTitle;
@@ -117,16 +123,17 @@ public class MovieDetails extends AppCompatActivity {
         }
 
         trailerViews();
+        reviewViews();
     }
 
     private void trailerViews(){
         trailers = new ArrayList<>();
         trailer_adapter = new Trailer_Adapter(this, trailers);
 
-        recyclerView = (RecyclerView) findViewById(R.id.trailer_recycler_view);
+        recyclerViewTrailer = (RecyclerView) findViewById(R.id.trailer_recycler_view);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.setAdapter(trailer_adapter);
+        recyclerViewTrailer.setLayoutManager(mLayoutManager);
+        recyclerViewTrailer.setAdapter(trailer_adapter);
 
         loadTrailer();
 
@@ -170,6 +177,67 @@ public class MovieDetails extends AppCompatActivity {
                 public void onFailure(Call<TrailerList> call, Throwable t) {
                     Log.d("Error", t.getMessage());
                     Toast.makeText(MovieDetails.this, "Error fetching trailer data", Toast.LENGTH_SHORT).show();
+
+                }
+            });
+
+        }catch (Exception e){
+            Log.d("Error", e.getMessage());
+            Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void reviewViews(){
+        reviews = new ArrayList<>();
+        review_adapter = new Review_Adapter(this, reviews);
+
+        recyclerViewReview = (RecyclerView) findViewById(R.id.review_recycler_view);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+        recyclerViewReview.setLayoutManager(mLayoutManager);
+        recyclerViewReview.setAdapter(review_adapter);
+
+        loadReview();
+
+    }
+
+    private void loadReview(){
+        try{
+            if (BuildConfig.TMDB_API.isEmpty()){
+                Toast.makeText(getApplicationContext(), "Enter your API Key in gradle.properties", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            final OkHttpClient client = new OkHttpClient.Builder()
+                    .addInterceptor(new Movie_Adapter.LoggingInterceptor())
+                    .connectTimeout(15, TimeUnit.SECONDS)
+                    .readTimeout(15,TimeUnit.SECONDS)
+                    .build();
+
+
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(MOVIE_URL)
+                    .client(client)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+            MovieAPI requestService = retrofit.create(MovieAPI.class);
+
+
+            Call<ReviewList> call = requestService.getReviews(movieId, BuildConfig.TMDB_API, "en-US");
+            call.enqueue(new Callback<ReviewList>() {
+                @Override
+                public void onResponse(Call<ReviewList> call, Response<ReviewList> response) {
+                    if(response.isSuccessful()){
+                        List<Review> review = response.body().getResults();
+                        review_adapter.setReviewList(review);
+                    } else{
+                        call.request().url().toString();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ReviewList> call, Throwable t) {
+                    Log.d("Error", t.getMessage());
+                    Toast.makeText(MovieDetails.this, "Error fetching reviews", Toast.LENGTH_SHORT).show();
 
                 }
             });
