@@ -116,10 +116,10 @@ public class MovieDetails extends AppCompatActivity {
             Toast.makeText(this, "No Movie Details Available", Toast.LENGTH_SHORT).show();
         }
 
-        initViews();
+        trailerViews();
     }
 
-    private void initViews(){
+    private void trailerViews(){
         trailers = new ArrayList<>();
         trailer_adapter = new Trailer_Adapter(this, trailers);
 
@@ -128,14 +128,11 @@ public class MovieDetails extends AppCompatActivity {
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setAdapter(trailer_adapter);
 
-        loadJSON();
+        loadTrailer();
 
     }
 
-    private void loadJSON(){
-
-
-
+    private void loadTrailer(){
         try{
             if (BuildConfig.TMDB_API.isEmpty()){
                 Toast.makeText(getApplicationContext(), "Enter your API Key in gradle.properties", Toast.LENGTH_SHORT).show();
@@ -182,4 +179,5 @@ public class MovieDetails extends AppCompatActivity {
             Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
         }
     }
+
 }

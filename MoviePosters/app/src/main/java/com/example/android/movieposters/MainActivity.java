@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -89,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<MovieList> call, Throwable t) {
-
+                Log.d("Error", t.getLocalizedMessage());
             }
         });
     }
@@ -119,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<MovieList> call, Throwable t) {
-
+                Log.d("Error", t.getLocalizedMessage());
             }
         });
     }

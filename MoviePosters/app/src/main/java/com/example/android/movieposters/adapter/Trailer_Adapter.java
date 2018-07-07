@@ -45,19 +45,20 @@ public class Trailer_Adapter extends RecyclerView.Adapter<Trailer_Adapter.ViewHo
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         final Trailer trailer = trailerList.get(position);
-        //holder.title.setText(trailerList.get(position).getName());
+        holder.title.setText(trailerList.get(position).getName());
 
         Picasso.with(mContext)
-                .load("http://image.tmdb.org/t/p/w500")
+                .load(R.drawable.youtube)
                 .placeholder(R.color.colorPrimaryDark)
                 .into(holder.imageView);
 
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mContext.startActivity(new Intent(Intent.ACTION_VIEW,
-                        VideoLinkBuilder.buildVideoUrl(trailer.getKey())));
-                /*if (position != RecyclerView.NO_POSITION) {
+                    mContext.startActivity(new Intent(Intent.ACTION_VIEW,
+                            VideoLinkBuilder.buildVideoUrl(trailer.getKey())));
+                    Toast.makeText(v.getContext(), "You clicked " + trailer.getName(), Toast.LENGTH_SHORT).show();
+                  /*if (position != RecyclerView.NO_POSITION) {
                     Trailer clickedDataItem = trailerList.get(position);
                     String videoId = trailerList.get(position).getKey();
                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=" + videoId));
@@ -65,7 +66,6 @@ public class Trailer_Adapter extends RecyclerView.Adapter<Trailer_Adapter.ViewHo
                     intent.putExtra("VIDEO_ID", videoId);
                     mContext.startActivity(intent);*/
 
-                    Toast.makeText(v.getContext(), "You clicked " + trailer.getName(), Toast.LENGTH_SHORT).show();
                 }
             });
       //  });
@@ -93,7 +93,7 @@ public class Trailer_Adapter extends RecyclerView.Adapter<Trailer_Adapter.ViewHo
 
         public ViewHolder(final View itemView) {
             super(itemView);
-            title = (TextView) itemView.findViewById(R.id.title);
+            title = (TextView) itemView.findViewById(R.id.title_trailer);
             imageView = (ImageView) itemView.findViewById(R.id.youtube);
         }
     }
@@ -108,6 +108,7 @@ public class Trailer_Adapter extends RecyclerView.Adapter<Trailer_Adapter.ViewHo
         this.trailerList.addAll(trailerList);
         notifyDataSetChanged();
     }
+
 
     public static class LoggingInterceptor implements Interceptor {
         @Override
