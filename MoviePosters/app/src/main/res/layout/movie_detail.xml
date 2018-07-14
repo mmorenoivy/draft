@@ -44,6 +44,27 @@
             android:src="@mipmap/ic_launcher_round"
             />
 
+             <!--           <android.support.design.widget.FloatingActionButton
+                       android:id="@+id/fab"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_gravity="end|bottom"
+                       android:src="@drawable/heart"
+                       android:layout_margin="16dp" />-->
+
+       <com.github.ivbaranov.mfb.MaterialFavoriteButton
+            android:id="@+id/favorite_button"
+           app:mfb_animate_favorite="true"
+            android:layout_width="wrap_content"
+            android:layout_height="90dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:padding="0dp"
+            app:mfb_type="heart"
+            app:layout_constraintTop_toBottomOf="@+id/hero_poster"
+            app:layout_constraintRight_toRightOf="parent"/>
+
+
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"

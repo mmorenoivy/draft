@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void callMoviePopular()
     {
+
         //here is how to implement retrofit to call the api
         final OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(new Movie_Adapter.LoggingInterceptor())
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         MovieAPI requestService = retrofit.create(MovieAPI.class);
 
         Call<MovieList> movieListCall = requestService.getMoviePopular();
-        movieListCall.enqueue(new Callback<MovieList>() {
+       movieListCall.enqueue(new Callback<MovieList>() {
             @Override
             public void onResponse(Call<MovieList> call, Response<MovieList> response) {
                 mRecyclerViewAdapter.setMovieList(response.body().getResults());
@@ -150,6 +151,8 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+
 /** https://stackoverflow.com/questions/1560788/how-to-check-internet-access-on-android-inetaddress-never-times-out
  * making sure that the connection does not time out when mobile phone is on airplane mode
  * **/

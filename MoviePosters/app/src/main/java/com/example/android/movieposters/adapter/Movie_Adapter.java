@@ -94,6 +94,7 @@ public class Movie_Adapter extends RecyclerView.Adapter<Movie_Adapter.ViewHolder
         notifyDataSetChanged();
     }
 
+
     public static class LoggingInterceptor implements Interceptor {
         @Override
         public okhttp3.Response intercept(Chain chain) throws IOException {
@@ -109,7 +110,7 @@ public class Movie_Adapter extends RecyclerView.Adapter<Movie_Adapter.ViewHolder
             String requestLog = String.format("Sending request %s on %s%n%s",
                     request.url(), chain.connection(), request.headers());
 
-  /*          if(request.method().compareToIgnoreCase("post")==0){
+ /*          if(request.method().compareToIgnoreCase("post")==0){
                 requestLog ="\n" + requestLog + "\n" + bodyToString(request);
             }
             Log.d("TAG","request" + "\n" + requestLog);*/

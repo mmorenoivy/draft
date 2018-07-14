@@ -1,12 +1,17 @@
 package com.example.android.movieposters.ui;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -16,6 +21,8 @@ import com.example.android.movieposters.BuildConfig;
 import com.example.android.movieposters.adapter.Review_Adapter;
 import com.example.android.movieposters.adapter.Trailer_Adapter;
 import com.example.android.movieposters.api.MovieAPI;
+import com.example.android.movieposters.data.FavoriteEntity;
+import com.example.android.movieposters.data.FavoriteViewModel;
 import com.example.android.movieposters.object.Movie;
 import com.example.android.movieposters.R;
 import com.example.android.movieposters.adapter.Movie_Adapter;
@@ -23,6 +30,7 @@ import com.example.android.movieposters.object.Review;
 import com.example.android.movieposters.object.ReviewList;
 import com.example.android.movieposters.object.Trailer;
 import com.example.android.movieposters.object.TrailerList;
+import com.github.ivbaranov.mfb.MaterialFavoriteButton;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -56,6 +64,9 @@ public class MovieDetails extends AppCompatActivity {
     private List<Trailer> trailers;
     private Review_Adapter review_adapter;
     private List<Review> reviews;
+    private FavoriteViewModel favoriteViewModel;
+    private FavoriteEntity favoriteEntity;
+
 
     ImageView poster, hero;
     TextView mTitle;
@@ -71,11 +82,13 @@ public class MovieDetails extends AppCompatActivity {
     int movieId;
     final static String MOVIE_URL = "https://api.themoviedb.org/3/";
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.movie_detail);
 
+        favoriteViewModel = ViewModelProviders.of(MovieDetails.this).get(FavoriteViewModel.class);
         mTitle = (TextView) findViewById(R.id.title);
         poster = (ImageView) findViewById(R.id.hero_poster);
         hero = (ImageView) findViewById(R.id.poster);
@@ -122,11 +135,66 @@ public class MovieDetails extends AppCompatActivity {
             Toast.makeText(this, "No Movie Details Available", Toast.LENGTH_SHORT).show();
         }
 
+        MaterialFavoriteButton materialFavoriteButton = (MaterialFavoriteButton) findViewById(R.id.favorite_button);
+
+
+        //boolean flag = true;
+
+        materialFavoriteButton.setOnFavoriteChangeListener(
+                new MaterialFavoriteButton.OnFavoriteChangeListener() {
+                    @Override
+                    public void onFavoriteChanged(MaterialFavoriteButton buttonView, boolean flag) {
+                        favoriteViewModel.loadMovieById(movieId).observe(MovieDetails.this, new Observer<FavoriteEntity>() {
+                            @Override
+                            public void onChanged(@Nullable FavoriteEntity favorite) {
+                                if (favorite != null) {
+                                    Log.d(TAG, "onChanged: " + favorite.getMovieId());
+                                    favoriteEntity = favorite;
+                                } else
+                                    Log.d(TAG, "onChange: Null");
+                            }
+                        });
+                        FavoriteEntity movieAddFavorite = new FavoriteEntity(movieId, thumbnail, releaseDate,
+                                userRating, movieDescription, hero_poster, movieName);
+
+                        favoriteViewModel.addFavoriteMovie(movieAddFavorite);
+                    }
+
+                }
+
+        );
+
+
+
+        //      if (flag) {
+
+        //        flag = false; //set it to true to display that this movie is a favorite
+        //    }
+        //   else if(!flag)
+        // {
+
+       /* favoriteViewModel.loadMovieById(movieId).observe(MovieDetails.this, new Observer<FavoriteEntity>() {
+            @Override
+            public void onChanged(@Nullable FavoriteEntity favorite) {
+                if (favorite != null) {
+                    Log.d(TAG, "onChanged: " + favorite.getMovieId());
+                    favoriteEntity = favorite;
+                } else
+                    Log.d(TAG, "onChange: Null");
+            }
+        });
+        FavoriteEntity movieDeleteFavorite = new FavoriteEntity(movieId, thumbnail, releaseDate,
+                userRating, movieDescription, hero_poster, movieName);
+
+        favoriteViewModel.removeFavoriteMovie(movieDeleteFavorite);*/
+        //   flag = true; //set it to false to display that this movie is not a favorite
+        //}
+
         trailerViews();
         reviewViews();
     }
 
-    private void trailerViews(){
+    private void trailerViews() {
         trailers = new ArrayList<>();
         trailer_adapter = new Trailer_Adapter(this, trailers);
 
@@ -139,9 +207,9 @@ public class MovieDetails extends AppCompatActivity {
 
     }
 
-    private void loadTrailer(){
-        try{
-            if (BuildConfig.TMDB_API.isEmpty()){
+    private void loadTrailer() {
+        try {
+            if (BuildConfig.TMDB_API.isEmpty()) {
                 Toast.makeText(getApplicationContext(), "Enter your API Key in gradle.properties", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -149,7 +217,7 @@ public class MovieDetails extends AppCompatActivity {
             final OkHttpClient client = new OkHttpClient.Builder()
                     .addInterceptor(new Movie_Adapter.LoggingInterceptor())
                     .connectTimeout(15, TimeUnit.SECONDS)
-                    .readTimeout(15,TimeUnit.SECONDS)
+                    .readTimeout(15, TimeUnit.SECONDS)
                     .build();
 
 
@@ -165,10 +233,10 @@ public class MovieDetails extends AppCompatActivity {
             call.enqueue(new Callback<TrailerList>() {
                 @Override
                 public void onResponse(Call<TrailerList> call, Response<TrailerList> response) {
-                    if(response.isSuccessful()){
+                    if (response.isSuccessful()) {
                         List<Trailer> trailer = response.body().getResults();
                         trailer_adapter.setTrailerList(trailer);
-                    } else{
+                    } else {
                         call.request().url().toString();
                     }
                 }
@@ -181,13 +249,13 @@ public class MovieDetails extends AppCompatActivity {
                 }
             });
 
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.d("Error", e.getMessage());
             Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void reviewViews(){
+    private void reviewViews() {
         reviews = new ArrayList<>();
         review_adapter = new Review_Adapter(this, reviews);
 
@@ -200,9 +268,9 @@ public class MovieDetails extends AppCompatActivity {
 
     }
 
-    private void loadReview(){
-        try{
-            if (BuildConfig.TMDB_API.isEmpty()){
+    private void loadReview() {
+        try {
+            if (BuildConfig.TMDB_API.isEmpty()) {
                 Toast.makeText(getApplicationContext(), "Enter your API Key in gradle.properties", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -210,7 +278,7 @@ public class MovieDetails extends AppCompatActivity {
             final OkHttpClient client = new OkHttpClient.Builder()
                     .addInterceptor(new Movie_Adapter.LoggingInterceptor())
                     .connectTimeout(15, TimeUnit.SECONDS)
-                    .readTimeout(15,TimeUnit.SECONDS)
+                    .readTimeout(15, TimeUnit.SECONDS)
                     .build();
 
 
@@ -226,10 +294,10 @@ public class MovieDetails extends AppCompatActivity {
             call.enqueue(new Callback<ReviewList>() {
                 @Override
                 public void onResponse(Call<ReviewList> call, Response<ReviewList> response) {
-                    if(response.isSuccessful()){
+                    if (response.isSuccessful()) {
                         List<Review> review = response.body().getResults();
                         review_adapter.setReviewList(review);
-                    } else{
+                    } else {
                         call.request().url().toString();
                     }
                 }
@@ -242,7 +310,7 @@ public class MovieDetails extends AppCompatActivity {
                 }
             });
 
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.d("Error", e.getMessage());
             Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
         }
