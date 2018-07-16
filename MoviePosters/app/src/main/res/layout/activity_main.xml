@@ -24,4 +24,13 @@
         android:id="@+id/recycledMovies"
         android:scrollbars="vertical"/>
 
+    <TextView
+        android:id="@+id/null_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        android:textAppearance="?android:textAppearanceMedium"/>
+
 </RelativeLayout>

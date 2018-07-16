@@ -2,9 +2,11 @@ package com.example.android.movieposters.ui;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.arch.persistence.room.Delete;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -31,6 +33,8 @@ import com.example.android.movieposters.object.ReviewList;
 import com.example.android.movieposters.object.Trailer;
 import com.example.android.movieposters.object.TrailerList;
 import com.github.ivbaranov.mfb.MaterialFavoriteButton;
+import com.leinardi.android.speeddial.SpeedDialActionItem;
+import com.leinardi.android.speeddial.SpeedDialView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -135,64 +139,96 @@ public class MovieDetails extends AppCompatActivity {
             Toast.makeText(this, "No Movie Details Available", Toast.LENGTH_SHORT).show();
         }
 
-        MaterialFavoriteButton materialFavoriteButton = (MaterialFavoriteButton) findViewById(R.id.favorite_button);
 
+        SpeedDialView button = findViewById(R.id.speedDialFavorite);
+        button.addActionItem(new SpeedDialActionItem.Builder(R.id.fab_no_label, R.drawable
+                .heart)
+                .setLabel("Add Favorite")
+                .setLabelClickable(true)
+                .setFabBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.colorAccent, getTheme()))
+                .create());
 
-        //boolean flag = true;
+        button.addActionItem(
+                new SpeedDialActionItem.Builder(R.id.fab_custom_color, R.drawable
+                        .ic_favorite_border_black_24dp)
+                        .setLabel("Remove Favorite")
+                        .setLabelClickable(true)
+                        .setFabBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.colorAccent, getTheme()))
+                        .create());
 
-        materialFavoriteButton.setOnFavoriteChangeListener(
-                new MaterialFavoriteButton.OnFavoriteChangeListener() {
-                    @Override
-                    public void onFavoriteChanged(MaterialFavoriteButton buttonView, boolean flag) {
+        button.setOnActionSelectedListener(new SpeedDialView.OnActionSelectedListener() {
+            @Override
+            public boolean onActionSelected(SpeedDialActionItem speedDialActionItem) {
+                switch (speedDialActionItem.getId()) {
+                    case R.id.fab_no_label:
+
                         favoriteViewModel.loadMovieById(movieId).observe(MovieDetails.this, new Observer<FavoriteEntity>() {
+
                             @Override
-                            public void onChanged(@Nullable FavoriteEntity favorite) {
-                                if (favorite != null) {
-                                    Log.d(TAG, "onChanged: " + favorite.getMovieId());
-                                    favoriteEntity = favorite;
-                                } else
-                                    Log.d(TAG, "onChange: Null");
+                            public void onChanged(@Nullable FavoriteEntity favMovie) {
+                                if (favMovie != null) {
+                                    Log.d(TAG, "onChanged: " + favMovie.getMovieId());
+                                    favoriteEntity = favMovie;
+                                } else {
+                                    Log.d(TAG, "onChanged: Null");
+                                }
                             }
                         });
-                        FavoriteEntity movieAddFavorite = new FavoriteEntity(movieId, thumbnail, releaseDate,
+
+                        SaveFavorite();
+                        /*FavoriteEntity addFavorite = new FavoriteEntity(movieId, thumbnail, releaseDate,
                                 userRating, movieDescription, hero_poster, movieName);
 
-                        favoriteViewModel.addFavoriteMovie(movieAddFavorite);
-                    }
+                        favoriteViewModel.addFavoriteMovie(addFavorite);*/
+                        return false;
 
+                    case R.id.fab_custom_color:
+
+                        favoriteViewModel.loadMovieById(movieId).observe(MovieDetails.this, new Observer<FavoriteEntity>() {
+
+                            @Override
+                            public void onChanged(@Nullable FavoriteEntity favMovie) {
+                                if (favMovie != null) {
+                                    Log.d(TAG, "onChanged: " + favMovie.getMovieId());
+                                    favoriteEntity = favMovie;
+                                } else {
+                                    Log.d(TAG, "onChanged: Null");
+                                }
+                            }
+                        });
+
+                        DeleteFavorite();
+                        /*FavoriteEntity deleteFavorite = new FavoriteEntity(movieId, thumbnail, releaseDate,
+                                userRating, movieDescription, hero_poster, movieName);
+
+                        favoriteViewModel.removeFavoriteMovie(deleteFavorite);*/
+                        return false;
+                    default:
+                        return false;
                 }
-
-        );
-
-
-
-        //      if (flag) {
-
-        //        flag = false; //set it to true to display that this movie is a favorite
-        //    }
-        //   else if(!flag)
-        // {
-
-       /* favoriteViewModel.loadMovieById(movieId).observe(MovieDetails.this, new Observer<FavoriteEntity>() {
-            @Override
-            public void onChanged(@Nullable FavoriteEntity favorite) {
-                if (favorite != null) {
-                    Log.d(TAG, "onChanged: " + favorite.getMovieId());
-                    favoriteEntity = favorite;
-                } else
-                    Log.d(TAG, "onChange: Null");
             }
         });
-        FavoriteEntity movieDeleteFavorite = new FavoriteEntity(movieId, thumbnail, releaseDate,
-                userRating, movieDescription, hero_poster, movieName);
 
-        favoriteViewModel.removeFavoriteMovie(movieDeleteFavorite);*/
-        //   flag = true; //set it to false to display that this movie is not a favorite
-        //}
+
 
         trailerViews();
         reviewViews();
     }
+
+    public void SaveFavorite() {
+        FavoriteEntity movieAddFavorite = new FavoriteEntity(movieId, thumbnail, releaseDate,
+                userRating, movieDescription, hero_poster, movieName);
+
+        favoriteViewModel.addFavoriteMovie(movieAddFavorite);
+    }
+
+    public void DeleteFavorite() {
+        FavoriteEntity movieDeleteFavorite = new FavoriteEntity(movieId, thumbnail, releaseDate,
+                userRating, movieDescription, hero_poster, movieName);
+
+        favoriteViewModel.removeFavoriteMovie(movieDeleteFavorite);
+    }
+
 
     private void trailerViews() {
         trailers = new ArrayList<>();
@@ -206,6 +242,7 @@ public class MovieDetails extends AppCompatActivity {
         loadTrailer();
 
     }
+
 
     private void loadTrailer() {
         try {

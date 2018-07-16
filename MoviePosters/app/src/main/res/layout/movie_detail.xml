@@ -44,14 +44,14 @@
             android:src="@mipmap/ic_launcher_round"
             />
 
-             <!--           <android.support.design.widget.FloatingActionButton
-                       android:id="@+id/fab"
-                       android:layout_width="wrap_content"
-                       android:layout_height="wrap_content"
-                       android:layout_gravity="end|bottom"
-                       android:src="@drawable/heart"
-                       android:layout_margin="16dp" />-->
-
+        <com.leinardi.android.speeddial.SpeedDialView
+            android:id="@+id/speedDialFavorite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            app:layout_behavior="@string/speeddial_scrolling_view_snackbar_behavior"
+            app:sdMainFabClosedSrc="@drawable/favorite" />
+<!--
        <com.github.ivbaranov.mfb.MaterialFavoriteButton
             android:id="@+id/favorite_button"
            app:mfb_animate_favorite="true"
@@ -63,7 +63,7 @@
             app:mfb_type="heart"
             app:layout_constraintTop_toBottomOf="@+id/hero_poster"
             app:layout_constraintRight_toRightOf="parent"/>
-
+-->
 
         <TextView
             android:id="@+id/title"
@@ -200,14 +200,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/view_divider"
             />
-
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true" />
-
-        <LinearLayout
+  <LinearLayout
             android:id="@+id/linearLayout5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -42,32 +42,32 @@ public class FavoriteViewModel extends AndroidViewModel {
     }
 
     private static class insertAsyncTask extends AsyncTask<FavoriteEntity, Void, Void> {
-        private FavoriteDatabase favoriteDatabase;
+        private FavoriteDatabase db;
 
         insertAsyncTask(FavoriteDatabase favoriteDatabase)
         {
-            favoriteDatabase = favoriteDatabase;
+            db = favoriteDatabase;
         }
 
         @Override
         protected Void doInBackground(final FavoriteEntity... favoriteEntities) {
-            favoriteDatabase.favoriteDAO().insertFavoriteMovie(favoriteEntities[0]);
+            db.favoriteDAO().insertFavoriteMovie(favoriteEntities[0]);
             return null;
         }
     }
 
     private static class deleteAsyncTask extends AsyncTask<FavoriteEntity, Void, Void>
     {
-        private FavoriteDatabase favoriteDatabase;
+        private FavoriteDatabase fdb;
 
         deleteAsyncTask(FavoriteDatabase favoriteDatabase)
         {
-            favoriteDatabase = favoriteDatabase;
+            fdb = favoriteDatabase;
         }
 
         @Override
         protected Void doInBackground(final FavoriteEntity... favoriteEntities) {
-            favoriteDatabase.favoriteDAO().deleteFavoriteMovie(favoriteEntities[0]);
+            fdb.favoriteDAO().deleteFavoriteMovie(favoriteEntities[0]);
             return null;
         }
     }

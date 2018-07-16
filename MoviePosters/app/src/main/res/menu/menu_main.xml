@@ -8,5 +8,7 @@
             android:title="@string/opt1" />
         <item android:id="@+id/menu_top_rated"
             android:title="@string/opt2" />
+        <item android:id="@+id/menu_favorites"
+            android:title="@string/opt3" />
     </group>
 </menu>

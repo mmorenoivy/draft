@@ -48,6 +48,11 @@ dependencies {
 // Lifecycle components
     implementation "android.arch.lifecycle:extensions:$rootProject.archLifecycleVersion"
     annotationProcessor "android.arch.lifecycle:compiler:$rootProject.archLifecycleVersion"
+//Debug data if there is data
+    implementation 'com.facebook.stetho:stetho:1.5.0'
+
+    implementation "com.leinardi.android:speed-dial:1.0.2"
+
 }
 
 repositories {
