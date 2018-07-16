@@ -23,6 +23,7 @@ import com.example.android.movieposters.adapter.Favorite_Adapter;
 import com.example.android.movieposters.adapter.Movie_Adapter;
 import com.example.android.movieposters.api.MovieAPI;
 import com.example.android.movieposters.data.FavoriteEntity;
+import com.example.android.movieposters.data.FavoriteList;
 import com.example.android.movieposters.data.FavoriteViewModel;
 import com.example.android.movieposters.object.MovieList;
 import com.facebook.stetho.Stetho;
@@ -83,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         mRecyclerViewAdapter = new Movie_Adapter(this);
         mRecyclerView.setAdapter(mRecyclerViewAdapter);
+        favoriteViewModel = ViewModelProviders.of(MainActivity.this).get(FavoriteViewModel.class);
 
     }
 
@@ -150,21 +152,19 @@ public class MainActivity extends AppCompatActivity {
     public void getFavoriteMovies() {
         Log.d(TAG, "getFavoriteMovies called.");
 
-        FavoriteViewModel faveEntity = ViewModelProviders.of(MainActivity.this).get(FavoriteViewModel.class);
+        FavoriteViewModel favoriteViewModel = ViewModelProviders.of(MainActivity.this).get(FavoriteViewModel.class);
         favoriteViewModel.loadAllFavorites().observe(MainActivity.this, new Observer<List<FavoriteEntity>>() {
             @Override
             public void onChanged(@Nullable List<FavoriteEntity> favoriteList) {
-
                 mFavoriteAdapter = new Favorite_Adapter(MainActivity.this, favoriteList);
-                if (favoriteList != null) {
+                mRecyclerView.setAdapter(mFavoriteAdapter);
+              /*  if (favoriteList != null) {
                     if (favoriteList.size() == 0) {
                         nullView.setVisibility(View.VISIBLE);
                         nullView.setText("No Added Favorites");
                     }
-                }
 
-                mRecyclerView.setAdapter(mFavoriteAdapter);
-
+                }*/
             }
         });
     }

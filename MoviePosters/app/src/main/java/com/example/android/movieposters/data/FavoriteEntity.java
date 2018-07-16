@@ -5,14 +5,18 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
+
+import com.example.android.movieposters.object.Movie;
 
 /**TODO: Create an entity
  * https://codelabs.developers.google.com/codelabs/android-room-with-a-view/
  * **/
 
 @Entity(tableName = "Favorite")
-public class FavoriteEntity {
+public class FavoriteEntity implements Parcelable {
 
     @NonNull
     @PrimaryKey
@@ -48,6 +52,18 @@ public class FavoriteEntity {
     public FavoriteEntity() {
 
     }
+
+    public static final Creator<FavoriteEntity> CREATOR = new Creator<FavoriteEntity>() {
+        @Override
+        public FavoriteEntity createFromParcel(Parcel in) {
+            return new FavoriteEntity();
+        }
+
+        @Override
+        public FavoriteEntity[] newArray(int size) {
+            return new FavoriteEntity[size];
+        }
+    };
 
     @NonNull
     public int getMovieId() {
@@ -106,4 +122,18 @@ public class FavoriteEntity {
         this.movieOverview = movieOverview;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(movieName);
+        parcel.writeString(moviePoster);
+        parcel.writeString(movieHero);
+        parcel.writeString(movieOverview);
+        parcel.writeString(userRating);
+        parcel.writeString(releaseDate);
+    }
 }

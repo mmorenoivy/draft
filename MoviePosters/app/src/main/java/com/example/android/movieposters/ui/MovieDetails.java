@@ -178,7 +178,6 @@ public class MovieDetails extends AppCompatActivity {
                         SaveFavorite();
                         /*FavoriteEntity addFavorite = new FavoriteEntity(movieId, thumbnail, releaseDate,
                                 userRating, movieDescription, hero_poster, movieName);
-
                         favoriteViewModel.addFavoriteMovie(addFavorite);*/
                         return false;
 
@@ -200,7 +199,6 @@ public class MovieDetails extends AppCompatActivity {
                         DeleteFavorite();
                         /*FavoriteEntity deleteFavorite = new FavoriteEntity(movieId, thumbnail, releaseDate,
                                 userRating, movieDescription, hero_poster, movieName);
-
                         favoriteViewModel.removeFavoriteMovie(deleteFavorite);*/
                         return false;
                     default:
@@ -242,7 +240,6 @@ public class MovieDetails extends AppCompatActivity {
         loadTrailer();
 
     }
-
 
     private void loadTrailer() {
         try {
