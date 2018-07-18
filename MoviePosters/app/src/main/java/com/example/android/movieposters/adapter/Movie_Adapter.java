@@ -2,6 +2,7 @@ package com.example.android.movieposters.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,6 +31,7 @@ import okhttp3.ResponseBody;
 
 public class Movie_Adapter extends RecyclerView.Adapter<Movie_Adapter.ViewHolder> {
     private List<Movie> mMovieList;
+
     private LayoutInflater mInflater;
     private Context mContext;
 
@@ -52,6 +54,7 @@ public class Movie_Adapter extends RecyclerView.Adapter<Movie_Adapter.ViewHolder
     public void onBindViewHolder(ViewHolder holder, final int position) {
 
         Movie movie = mMovieList.get(position);
+
         // This is how to use Picasso to load images from the internet.
         Picasso.with(mContext)
                 .load(TMDB_IMAGE_PATH + movie.getPoster_path())
@@ -64,9 +67,13 @@ public class Movie_Adapter extends RecyclerView.Adapter<Movie_Adapter.ViewHolder
             public void onClick(View view) {
                 mContext = view.getContext();
                 Movie clickedMovie = mMovieList.get(position);
+
                 Intent intent = new Intent(mContext, MovieDetails.class);
-                intent.putExtra("movies", clickedMovie);
+
+                //intent.putExtra(this, clickedMovie);
+
                 mContext.startActivity(intent);
+
                // Toast.makeText(mContext, clickedMovie + "Movie is clicked", Toast.LENGTH_LONG).show();
             }
         });

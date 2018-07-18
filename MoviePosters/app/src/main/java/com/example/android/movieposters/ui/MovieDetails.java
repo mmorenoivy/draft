@@ -23,7 +23,6 @@ import com.example.android.movieposters.BuildConfig;
 import com.example.android.movieposters.adapter.Review_Adapter;
 import com.example.android.movieposters.adapter.Trailer_Adapter;
 import com.example.android.movieposters.api.MovieAPI;
-import com.example.android.movieposters.data.FavoriteEntity;
 import com.example.android.movieposters.data.FavoriteViewModel;
 import com.example.android.movieposters.object.Movie;
 import com.example.android.movieposters.R;
@@ -69,7 +68,6 @@ public class MovieDetails extends AppCompatActivity {
     private Review_Adapter review_adapter;
     private List<Review> reviews;
     private FavoriteViewModel favoriteViewModel;
-    private FavoriteEntity favoriteEntity;
 
 
     ImageView poster, hero;
@@ -103,41 +101,66 @@ public class MovieDetails extends AppCompatActivity {
         mTextRating = (TextView) findViewById(R.id.tv_rating);
         mUserRating = (TextView) findViewById(R.id.rating);
         mReleaseDate = (TextView) findViewById(R.id.release_date);
+/*
+       movieId = getIntent().getExtras().getInt("id");
+       hero_poster = getIntent().getExtras().getString("hero_backdrop");
+       thumbnail = getIntent().getExtras().getString("poster");
+       movieName = getIntent().getExtras().getString("original_title");
+       movieDescription = getIntent().getExtras().getString("overview");
+       userRating = getIntent().getExtras().getString("vote_average");
+       releaseDate = getIntent().getExtras().getString("release_date");
+
+        Picasso.with(this)
+                .load(TMDB_BACKDROP_PATH + mMovie.getPoster_path())
+                .placeholder(R.color.colorPrimaryDark)
+                .into(poster);
+
+        Picasso.with(this)
+                .load(TMDB_IMAGE_PATH + mMovie.getBackdrop_path())
+                .placeholder(R.color.colorPrimaryDark)
+                .into(hero);
+
+        mTitle.setText(movieName);
+        mOverview.setText(movieDescription);
+        mTextRating.setText("Rating: ");
+        ratingBar.setRating(Float.valueOf(userRating) / 2);
+        mUserRating.setText(userRating);
+        mReleaseDate.setText(releaseDate);*/
+
+        //   Intent intentStartDetails = getIntent();
+        //   if (intentStartDetails.hasExtra(MOVIE)) {
 
 
-        Intent intentStartDetails = getIntent();
-        if (intentStartDetails.hasExtra(MOVIE)) {
+        mMovie = getIntent().getParcelableExtra(MOVIE);
 
-            mMovie = getIntent().getParcelableExtra(MOVIE);
+        hero_poster = mMovie.getBackdrop_path();
+        thumbnail = mMovie.getPoster_path();
 
-            hero_poster = mMovie.getBackdrop_path();
-            thumbnail = mMovie.getPoster_path();
+        movieName = mMovie.getOriginal_title();
+        movieDescription = mMovie.getOverview();
+        userRating = mMovie.getVote_average();
+        releaseDate = mMovie.getRelease_date();
+        movieId = mMovie.getId();
 
-            movieName = mMovie.getOriginal_title();
-            movieDescription = mMovie.getOverview();
-            userRating = mMovie.getVote_average();
-            releaseDate = mMovie.getRelease_date();
-            movieId = mMovie.getId();
+        Picasso.with(this)
+                .load(TMDB_BACKDROP_PATH + mMovie.getPoster_path())
+                .placeholder(R.color.colorPrimaryDark)
+                .into(poster);
 
-            Picasso.with(this)
-                    .load(TMDB_BACKDROP_PATH + mMovie.getPoster_path())
-                    .placeholder(R.color.colorPrimaryDark)
-                    .into(poster);
+        Picasso.with(this)
+                .load(TMDB_IMAGE_PATH + mMovie.getBackdrop_path())
+                .placeholder(R.color.colorPrimaryDark)
+                .into(hero);
 
-            Picasso.with(this)
-                    .load(TMDB_IMAGE_PATH + mMovie.getBackdrop_path())
-                    .placeholder(R.color.colorPrimaryDark)
-                    .into(hero);
-
-            mTitle.setText(movieName);
-            mOverview.setText(movieDescription);
-            mTextRating.setText("Rating: ");
-            ratingBar.setRating(Float.valueOf(userRating) / 2);
-            mUserRating.setText(userRating);
-            mReleaseDate.setText(releaseDate);
-        } else {
-            Toast.makeText(this, "No Movie Details Available", Toast.LENGTH_SHORT).show();
-        }
+        mTitle.setText(movieName);
+        mOverview.setText(movieDescription);
+        mTextRating.setText("Rating: ");
+        ratingBar.setRating(Float.valueOf(userRating) / 2);
+        mUserRating.setText(userRating);
+        mReleaseDate.setText(releaseDate);
+        // } else {
+        //   Toast.makeText(this, "No Movie Details Available", Toast.LENGTH_SHORT).show();
+        // }
 
 
         SpeedDialView button = findViewById(R.id.speedDialFavorite);
@@ -162,13 +185,13 @@ public class MovieDetails extends AppCompatActivity {
                 switch (speedDialActionItem.getId()) {
                     case R.id.fab_no_label:
 
-                        favoriteViewModel.loadMovieById(movieId).observe(MovieDetails.this, new Observer<FavoriteEntity>() {
+                        favoriteViewModel.loadMovieById(movieId).observe(MovieDetails.this, new Observer<Movie>() {
 
                             @Override
-                            public void onChanged(@Nullable FavoriteEntity favMovie) {
+                            public void onChanged(@Nullable Movie favMovie) {
                                 if (favMovie != null) {
-                                    Log.d(TAG, "onChanged: " + favMovie.getMovieId());
-                                    favoriteEntity = favMovie;
+                                    Log.d(TAG, "onChanged: " + favMovie.getId());
+                                    mMovie = favMovie;
                                 } else {
                                     Log.d(TAG, "onChanged: Null");
                                 }
@@ -183,13 +206,13 @@ public class MovieDetails extends AppCompatActivity {
 
                     case R.id.fab_custom_color:
 
-                        favoriteViewModel.loadMovieById(movieId).observe(MovieDetails.this, new Observer<FavoriteEntity>() {
+                        favoriteViewModel.loadMovieById(movieId).observe(MovieDetails.this, new Observer<Movie>() {
 
                             @Override
-                            public void onChanged(@Nullable FavoriteEntity favMovie) {
+                            public void onChanged(@Nullable Movie favMovie) {
                                 if (favMovie != null) {
-                                    Log.d(TAG, "onChanged: " + favMovie.getMovieId());
-                                    favoriteEntity = favMovie;
+                                    Log.d(TAG, "onChanged: " + mMovie.getId());
+                                    mMovie = favMovie;
                                 } else {
                                     Log.d(TAG, "onChanged: Null");
                                 }
@@ -208,20 +231,19 @@ public class MovieDetails extends AppCompatActivity {
         });
 
 
-
         trailerViews();
         reviewViews();
     }
 
     public void SaveFavorite() {
-        FavoriteEntity movieAddFavorite = new FavoriteEntity(movieId, thumbnail, releaseDate,
+        Movie movieAddFavorite = new Movie(movieId, thumbnail, releaseDate,
                 userRating, movieDescription, hero_poster, movieName);
 
         favoriteViewModel.addFavoriteMovie(movieAddFavorite);
     }
 
     public void DeleteFavorite() {
-        FavoriteEntity movieDeleteFavorite = new FavoriteEntity(movieId, thumbnail, releaseDate,
+        Movie movieDeleteFavorite = new Movie(movieId, thumbnail, releaseDate,
                 userRating, movieDescription, hero_poster, movieName);
 
         favoriteViewModel.removeFavoriteMovie(movieDeleteFavorite);

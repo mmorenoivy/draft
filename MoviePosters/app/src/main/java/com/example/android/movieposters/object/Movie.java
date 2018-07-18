@@ -1,7 +1,11 @@
 package com.example.android.movieposters.object;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 /**
  * This is the model class which represents the movie details
@@ -12,7 +16,8 @@ import android.os.Parcelable;
  * user rating (called vote_average in the api)
  * release date
  **/
-public class Movie implements Parcelable {
+@Entity(tableName = "Favorite")
+public class Movie implements Parcelable{
 
     /**
      * vote_count : 3443
@@ -31,12 +36,22 @@ public class Movie implements Parcelable {
      * release_date : 2018-04-25
      */
 
+
+    @NonNull
+    @PrimaryKey
+    @ColumnInfo(name = "movieId")
     private int id;
+    @ColumnInfo(name = "userRating")
     private String vote_average;
+    @ColumnInfo(name = "movieHero")
     private String backdrop_path;
+    @ColumnInfo(name = "moviePoster")
     private String poster_path;
+    @ColumnInfo(name = "movieName")
     private String original_title;
+    @ColumnInfo(name = "movieOverview")
     private String overview;
+    @ColumnInfo(name = "releaseDate")
     private String release_date;
 
     public Movie()
@@ -44,7 +59,7 @@ public class Movie implements Parcelable {
 
     }
 
-    public Movie(int id, String movieTitle, String movieHero, String moviePoster, String overview, String voteAverage, String releaseDate)
+    public Movie(@NonNull int id, String movieTitle, String movieHero, String moviePoster, String overview, String voteAverage, String releaseDate)
     {
 
         this.original_title = movieTitle;
@@ -79,11 +94,12 @@ public class Movie implements Parcelable {
         }
     };
 
+    @NonNull
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(@NonNull int id) {
         this.id = id;
     }
 
@@ -107,7 +123,7 @@ public class Movie implements Parcelable {
         return backdrop_path;
     }
 
-    public void setBackdrop_path_path(String backdrop_path) {
+    public void setBackdrop_path(String backdrop_path) {
         this.backdrop_path = backdrop_path;
     }
 
@@ -122,6 +138,7 @@ public class Movie implements Parcelable {
     public String getOverview() {
         return overview;
     }
+
 
     public void setOverview(String overview) {
         this.overview = overview;

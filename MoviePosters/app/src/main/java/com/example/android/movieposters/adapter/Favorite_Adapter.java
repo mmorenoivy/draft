@@ -13,20 +13,20 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.example.android.movieposters.R;
-import com.example.android.movieposters.data.FavoriteEntity;
 import com.example.android.movieposters.object.Movie;
 import com.example.android.movieposters.ui.MovieDetails;
 import com.squareup.picasso.Picasso;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class Favorite_Adapter extends RecyclerView.Adapter<Favorite_Adapter.ViewHolder> {
-    private List<FavoriteEntity> favoriteList;
+    private List<Movie> favoriteList;
     private Context mContext;
     private static final String TAG = "Favorite Adapter";
     public static final String TMDB_IMAGE_PATH = "http://image.tmdb.org/t/p/w500";
 
-    public Favorite_Adapter(Context mContext, List<FavoriteEntity> favoriteList) {
+    public Favorite_Adapter(Context mContext) {
         this.favoriteList = favoriteList;
         this.mContext = mContext;
     }
@@ -41,37 +41,43 @@ public class Favorite_Adapter extends RecyclerView.Adapter<Favorite_Adapter.View
 
     @Override
     public void onBindViewHolder(Favorite_Adapter.ViewHolder holder, final int position) {
-        final FavoriteEntity movie = favoriteList.get(position);
+       final Movie movie = favoriteList.get(position);
 
         Log.d(TAG, "onBindViewHolder called");
 
         Picasso.with(mContext)
-                .load(TMDB_IMAGE_PATH + movie.getMoviePoster())
+                .load(TMDB_IMAGE_PATH + movie.getBackdrop_path())
                 .placeholder(R.color.colorPrimaryDark)
                 .into(holder.imageView);
+
+
 
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Intent intent = new Intent(mContext, MovieDetails.class);
+
+           /*
                 intent.putExtra("poster", movie.getMoviePoster());
                 intent.putExtra("hero_backdrop", movie.getMovieHero());
                 intent.putExtra("original_title", movie.getMovieName());
                 intent.putExtra("overview", movie.getMovieOverview());
                 intent.putExtra("vote_average", movie.getUserRating());
-                intent.putExtra("release_date", movie.getReleaseDate());
+                intent.putExtra("release_date", movie.getReleaseDate());*/
                 mContext.startActivity(intent);
             }
         };
         holder.imageView.setOnClickListener(listener);
-       /* holder.imageView.setOnClickListener(new View.OnClickListener() {
+        /*
+       holder.imageView.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
                 mContext = view.getContext();
-                FavoriteEntity clickMovie = favoriteList.get(position);
+                Movie clickedMovie = favoriteList.get(position);
                 Intent intent = new Intent(mContext, MovieDetails.class);
-                intent.putExtra("movies", (Parcelable) clickMovie);
+                intent.putExtra("movies", clickedMovie);
                 mContext.startActivity(intent);
             }
         });*/

@@ -6,6 +6,8 @@ import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 
+import com.example.android.movieposters.object.Movie;
+
 import java.util.List;
 
 import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
@@ -14,7 +16,7 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 public interface FavoriteDAO {
 
     @Query("SELECT * FROM Favorite")
-    LiveData<List<FavoriteEntity>> loadAllFavorites();
+    LiveData<List<Movie>> loadAllFavorites();
 
     /**If the table has more than one column, you can use
 
@@ -23,11 +25,11 @@ public interface FavoriteDAO {
      to replace a row.
      * **/
     @Insert(onConflict = REPLACE)
-    void insertFavoriteMovie(FavoriteEntity favoriteEntity);
+    void insertFavoriteMovie(Movie favoriteEntity);
 
     @Delete
-    void deleteFavoriteMovie(FavoriteEntity favoriteEntity);
+    void deleteFavoriteMovie(Movie favoriteEntity);
 
     @Query("SELECT * FROM Favorite WHERE movieId = :movieId")
-    LiveData<FavoriteEntity> loadMovieById(int movieId);
+    LiveData<Movie> loadMovieById(int movieId);
 }
