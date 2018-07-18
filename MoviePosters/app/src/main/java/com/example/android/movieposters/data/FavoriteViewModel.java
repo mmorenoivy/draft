@@ -22,7 +22,7 @@ public class FavoriteViewModel extends AndroidViewModel {
 
         favoriteDatabase = FavoriteDatabase.getInstance(this.getApplication());
         mFavoriteMovies = favoriteDatabase.favoriteDAO().loadAllFavorites();
-        Log.d(TAG, "FavoriteEntity RoomDatabase is loaded");
+        Log.d(TAG, "Movie RoomDatabase is loaded");
     }
 
     public LiveData<List<Movie>> loadAllFavorites() {

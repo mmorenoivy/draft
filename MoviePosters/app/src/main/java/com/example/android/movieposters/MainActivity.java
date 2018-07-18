@@ -3,6 +3,7 @@ package com.example.android.movieposters;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.annotation.Nullable;
@@ -19,12 +20,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.android.movieposters.adapter.Favorite_Adapter;
 import com.example.android.movieposters.adapter.Movie_Adapter;
 import com.example.android.movieposters.api.MovieAPI;
 import com.example.android.movieposters.data.FavoriteViewModel;
 import com.example.android.movieposters.object.Movie;
 import com.example.android.movieposters.object.MovieList;
+import com.example.android.movieposters.ui.MovieDetails;
 import com.facebook.stetho.Stetho;
 
 import java.util.List;
@@ -65,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView nullView;
     private RecyclerView mRecyclerView;
     private Movie_Adapter mRecyclerViewAdapter;
-    private Favorite_Adapter mFavoriteAdapter;
     private Movie favoriteEntity;
     private FavoriteViewModel favoriteViewModel;
 
@@ -147,17 +147,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
+//tODO resolve this part
     public void getFavoriteMovies() {
         Log.d(TAG, "getFavoriteMovies called.");
+        final FavoriteViewModel viewModel = ViewModelProviders.of(MainActivity.this).get(FavoriteViewModel.class);
 
-        FavoriteViewModel favoriteViewModel = ViewModelProviders.of(MainActivity.this).get(FavoriteViewModel.class);
-        favoriteViewModel.loadAllFavorites().observe(MainActivity.this, new Observer<List<Movie>>() {
-            @Override
-            public void onChanged(@Nullable List<Movie> favoriteList) {
-                mRecyclerView.setAdapter(mFavoriteAdapter);
-                }
-        });
     }
 
 

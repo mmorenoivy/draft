@@ -67,11 +67,8 @@ public class Movie_Adapter extends RecyclerView.Adapter<Movie_Adapter.ViewHolder
             public void onClick(View view) {
                 mContext = view.getContext();
                 Movie clickedMovie = mMovieList.get(position);
-
                 Intent intent = new Intent(mContext, MovieDetails.class);
-
-                //intent.putExtra(this, clickedMovie);
-
+                intent.putExtra("movies", clickedMovie);
                 mContext.startActivity(intent);
 
                // Toast.makeText(mContext, clickedMovie + "Movie is clicked", Toast.LENGTH_LONG).show();
