@@ -1,5 +1,6 @@
 package com.example.android.movieposters;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -27,6 +28,7 @@ import com.example.android.movieposters.object.Movie;
 import com.example.android.movieposters.object.MovieList;
 import com.example.android.movieposters.ui.MovieDetails;
 import com.facebook.stetho.Stetho;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -151,6 +153,13 @@ public class MainActivity extends AppCompatActivity {
     public void getFavoriteMovies() {
         Log.d(TAG, "getFavoriteMovies called.");
         final FavoriteViewModel viewModel = ViewModelProviders.of(MainActivity.this).get(FavoriteViewModel.class);
+        LiveData<List<Movie>> movies = viewModel.loadAllFavorites();
+        viewModel.loadAllFavorites().observe(this, new Observer<List<Movie>>() {
+            @Override
+            public void onChanged(@Nullable List<Movie> movies) {
+              mRecyclerViewAdapter.setMovieList(movies);
+            }
+        });
 
     }
 

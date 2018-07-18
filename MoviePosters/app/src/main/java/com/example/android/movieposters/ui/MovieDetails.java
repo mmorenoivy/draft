@@ -6,6 +6,7 @@ import android.arch.persistence.room.Delete;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -127,8 +128,8 @@ public class MovieDetails extends AppCompatActivity {
         mUserRating.setText(userRating);
         mReleaseDate.setText(releaseDate);*/
 
-        //   Intent intentStartDetails = getIntent();
-        //   if (intentStartDetails.hasExtra(MOVIE)) {
+          Intent intentStartDetails = getIntent();
+           if (intentStartDetails.hasExtra(MOVIE)) {
 
 
         mMovie = getIntent().getParcelableExtra(MOVIE);
@@ -158,9 +159,9 @@ public class MovieDetails extends AppCompatActivity {
         ratingBar.setRating(Float.valueOf(userRating) / 2);
         mUserRating.setText(userRating);
         mReleaseDate.setText(releaseDate);
-        // } else {
-        //   Toast.makeText(this, "No Movie Details Available", Toast.LENGTH_SHORT).show();
-        // }
+         } else {
+           Toast.makeText(this, "No Movie Details Available", Toast.LENGTH_SHORT).show();
+         }
 
 
         SpeedDialView button = findViewById(R.id.speedDialFavorite);
@@ -199,6 +200,7 @@ public class MovieDetails extends AppCompatActivity {
                         });
 
                         SaveFavorite();
+
                         /*FavoriteEntity addFavorite = new FavoriteEntity(movieId, thumbnail, releaseDate,
                                 userRating, movieDescription, hero_poster, movieName);
                         favoriteViewModel.addFavoriteMovie(addFavorite);*/
@@ -240,6 +242,7 @@ public class MovieDetails extends AppCompatActivity {
                 userRating, movieDescription, hero_poster, movieName);
 
         favoriteViewModel.addFavoriteMovie(movieAddFavorite);
+
     }
 
     public void DeleteFavorite() {
