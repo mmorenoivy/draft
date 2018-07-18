@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.example.android.movieposters.adapter.Movie_Adapter;
 import com.example.android.movieposters.api.MovieAPI;
+import com.example.android.movieposters.data.FavoriteDAO;
 import com.example.android.movieposters.data.FavoriteViewModel;
 import com.example.android.movieposters.object.Movie;
 import com.example.android.movieposters.object.MovieList;
@@ -53,6 +54,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * https://developers.google.com/web/tools/chrome-devtools/remote-debugging/
  * https://github.com/codepath/android_guides/wiki/Debugging-with-Stetho
  * https://github.com/leinardi/FloatingActionButtonSpeedDial
+ * https://google-developer-training.gitbooks.io/android-developer-advanced-course-practicals/unit-6-working-with-architecture-components/lesson-14-room,-livedata,-viewmodel/14-1-a-room-livedata-viewmodel/14-1-a-room-livedata-viewmodel.html#task11intro
  * final code Stage 1 - 6/2/2018
  * final code Stage 2 - 7/14/2018
  * coded with my 2 year old Mark
@@ -68,9 +70,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView nullView;
     private RecyclerView mRecyclerView;
     private Movie_Adapter mRecyclerViewAdapter;
-    private Movie favoriteEntity;
     private FavoriteViewModel favoriteViewModel;
-
+    private List<Movie> moviesList;
     private ProgressBar loader;
 
     @Override
@@ -81,22 +82,22 @@ public class MainActivity extends AppCompatActivity {
 
         checkConnection();
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycledMovies);
+        mRecyclerView = findViewById(R.id.recycledMovies);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         mRecyclerViewAdapter = new Movie_Adapter(this);
         mRecyclerView.setAdapter(mRecyclerViewAdapter);
         favoriteViewModel = ViewModelProviders.of(MainActivity.this).get(FavoriteViewModel.class);
 
+
     }
 
-    public void callMoviePopular()
-    {
+    public void callMoviePopular() {
 
         //here is how to implement retrofit to call the api
         final OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(new Movie_Adapter.LoggingInterceptor())
                 .connectTimeout(15, TimeUnit.SECONDS)
-                .readTimeout(15,TimeUnit.SECONDS)
+                .readTimeout(15, TimeUnit.SECONDS)
                 .build();
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -107,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
         MovieAPI requestService = retrofit.create(MovieAPI.class);
 
         Call<MovieList> movieListCall = requestService.getMoviePopular();
-       movieListCall.enqueue(new Callback<MovieList>() {
+        movieListCall.enqueue(new Callback<MovieList>() {
             @Override
             public void onResponse(Call<MovieList> call, Response<MovieList> response) {
                 mRecyclerViewAdapter.setMovieList(response.body().getResults());
@@ -120,12 +121,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void callTopRated()
-    {
+    public void callTopRated() {
         final OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(new Movie_Adapter.LoggingInterceptor())
                 .connectTimeout(15, TimeUnit.SECONDS)
-                .readTimeout(15,TimeUnit.SECONDS)
+                .readTimeout(15, TimeUnit.SECONDS)
                 .build();
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -140,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
         movieListCall.enqueue(new Callback<MovieList>() {
             @Override
             public void onResponse(Call<MovieList> call, Response<MovieList> response) {
+
                 mRecyclerViewAdapter.setMovieList(response.body().getResults());
             }
 
@@ -149,17 +150,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-//tODO resolve this part
+
+    //tODO resolve this part
     public void getFavoriteMovies() {
         Log.d(TAG, "getFavoriteMovies called.");
+
+        mRecyclerViewAdapter = new Movie_Adapter(this);
         final FavoriteViewModel viewModel = ViewModelProviders.of(MainActivity.this).get(FavoriteViewModel.class);
-        LiveData<List<Movie>> movies = viewModel.loadAllFavorites();
         viewModel.loadAllFavorites().observe(this, new Observer<List<Movie>>() {
             @Override
             public void onChanged(@Nullable List<Movie> movies) {
-              mRecyclerViewAdapter.setMovieList(movies);
+                mRecyclerViewAdapter.setMovieList(movies);
             }
         });
+        mRecyclerView.setAdapter(mRecyclerViewAdapter);
 
     }
 
@@ -174,19 +178,15 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-   @Override
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.menu_popular)
-        {
+        if (item.getItemId() == R.id.menu_popular) {
             callMoviePopular();
             return true;
-        }
-        else if(item.getItemId()== R.id.menu_top_rated)
-        {
+        } else if (item.getItemId() == R.id.menu_top_rated) {
             callTopRated();
             return true;
-        }else if(item.getItemId()==R.id.menu_favorites)
-        {
+        } else if (item.getItemId() == R.id.menu_favorites) {
             getFavoriteMovies();
             return true;
         }
@@ -195,20 +195,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-/** https://stackoverflow.com/questions/1560788/how-to-check-internet-access-on-android-inetaddress-never-times-out
- * making sure that the connection does not time out when mobile phone is on airplane mode
- * **/
+    /**
+     * https://stackoverflow.com/questions/1560788/how-to-check-internet-access-on-android-inetaddress-never-times-out
+     * making sure that the connection does not time out when mobile phone is on airplane mode
+     **/
     protected boolean isOnline() {
-        ConnectivityManager cm = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
-    public void checkConnection(){
-        if(isOnline()){
+
+    public void checkConnection() {
+        if (isOnline()) {
             callMoviePopular();
             flag = true;
             Toast.makeText(MainActivity.this, "You are connected to the Internet.", Toast.LENGTH_SHORT).show();
-        }else{
+        } else {
             Toast.makeText(MainActivity.this, "You are not connected to the Internet. Check Connection Settings and Refresh", Toast.LENGTH_LONG).show();
         }
     }

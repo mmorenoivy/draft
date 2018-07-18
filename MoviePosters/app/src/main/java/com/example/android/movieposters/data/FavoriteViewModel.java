@@ -26,6 +26,7 @@ public class FavoriteViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<Movie>> loadAllFavorites() {
+
         return mFavoriteMovies;
     }
 
@@ -74,5 +75,9 @@ public class FavoriteViewModel extends AndroidViewModel {
         }
     }
 
-
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        Log.d(TAG, "oncleared called");
+    }
 }

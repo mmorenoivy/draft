@@ -1,5 +1,6 @@
 package com.example.android.movieposters.adapter;
 
+import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Parcelable;
@@ -44,6 +45,7 @@ public class Movie_Adapter extends RecyclerView.Adapter<Movie_Adapter.ViewHolder
         this.mMovieList = new ArrayList<>();
     }
 
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.movie_image, parent, false);
@@ -57,6 +59,7 @@ public class Movie_Adapter extends RecyclerView.Adapter<Movie_Adapter.ViewHolder
 
         // This is how to use Picasso to load images from the internet.
         Picasso.with(mContext)
+
                 .load(TMDB_IMAGE_PATH + movie.getPoster_path())
                 .placeholder(R.color.colorPrimaryDark)
                 .into(holder.imageView);
@@ -81,7 +84,7 @@ public class Movie_Adapter extends RecyclerView.Adapter<Movie_Adapter.ViewHolder
 
         public ViewHolder(final View itemView) {
             super(itemView);
-            imageView = (ImageView) itemView.findViewById(R.id.imageView);
+            imageView = itemView.findViewById(R.id.imageView);
         }
     }
 

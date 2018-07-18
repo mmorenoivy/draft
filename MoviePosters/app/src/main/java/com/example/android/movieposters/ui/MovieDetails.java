@@ -102,66 +102,42 @@ public class MovieDetails extends AppCompatActivity {
         mTextRating = (TextView) findViewById(R.id.tv_rating);
         mUserRating = (TextView) findViewById(R.id.rating);
         mReleaseDate = (TextView) findViewById(R.id.release_date);
-/*
-       movieId = getIntent().getExtras().getInt("id");
-       hero_poster = getIntent().getExtras().getString("hero_backdrop");
-       thumbnail = getIntent().getExtras().getString("poster");
-       movieName = getIntent().getExtras().getString("original_title");
-       movieDescription = getIntent().getExtras().getString("overview");
-       userRating = getIntent().getExtras().getString("vote_average");
-       releaseDate = getIntent().getExtras().getString("release_date");
-
-        Picasso.with(this)
-                .load(TMDB_BACKDROP_PATH + mMovie.getPoster_path())
-                .placeholder(R.color.colorPrimaryDark)
-                .into(poster);
-
-        Picasso.with(this)
-                .load(TMDB_IMAGE_PATH + mMovie.getBackdrop_path())
-                .placeholder(R.color.colorPrimaryDark)
-                .into(hero);
-
-        mTitle.setText(movieName);
-        mOverview.setText(movieDescription);
-        mTextRating.setText("Rating: ");
-        ratingBar.setRating(Float.valueOf(userRating) / 2);
-        mUserRating.setText(userRating);
-        mReleaseDate.setText(releaseDate);*/
-
-          Intent intentStartDetails = getIntent();
-           if (intentStartDetails.hasExtra(MOVIE)) {
 
 
-        mMovie = getIntent().getParcelableExtra(MOVIE);
+        Intent intentStartDetails = getIntent();
+        if (intentStartDetails.hasExtra(MOVIE)) {
 
-        hero_poster = mMovie.getBackdrop_path();
-        thumbnail = mMovie.getPoster_path();
 
-        movieName = mMovie.getOriginal_title();
-        movieDescription = mMovie.getOverview();
-        userRating = mMovie.getVote_average();
-        releaseDate = mMovie.getRelease_date();
-        movieId = mMovie.getId();
+            mMovie = getIntent().getParcelableExtra(MOVIE);
 
-        Picasso.with(this)
-                .load(TMDB_BACKDROP_PATH + mMovie.getPoster_path())
-                .placeholder(R.color.colorPrimaryDark)
-                .into(poster);
+            hero_poster = mMovie.getBackdrop_path();
+            thumbnail = mMovie.getPoster_path();
 
-        Picasso.with(this)
-                .load(TMDB_IMAGE_PATH + mMovie.getBackdrop_path())
-                .placeholder(R.color.colorPrimaryDark)
-                .into(hero);
+            movieName = mMovie.getOriginal_title();
+            movieDescription = mMovie.getOverview();
+            userRating = mMovie.getVote_average();
+            releaseDate = mMovie.getRelease_date();
+            movieId = mMovie.getId();
 
-        mTitle.setText(movieName);
-        mOverview.setText(movieDescription);
-        mTextRating.setText("Rating: ");
-        ratingBar.setRating(Float.valueOf(userRating) / 2);
-        mUserRating.setText(userRating);
-        mReleaseDate.setText(releaseDate);
-         } else {
-           Toast.makeText(this, "No Movie Details Available", Toast.LENGTH_SHORT).show();
-         }
+            Picasso.with(this)
+                    .load(TMDB_BACKDROP_PATH + mMovie.getPoster_path())
+                    .placeholder(R.color.colorPrimaryDark)
+                    .into(poster);
+
+            Picasso.with(this)
+                    .load(TMDB_IMAGE_PATH + mMovie.getBackdrop_path())
+                    .placeholder(R.color.colorPrimaryDark)
+                    .into(hero);
+
+            mTitle.setText(movieName);
+            mOverview.setText(movieDescription);
+            mTextRating.setText("Rating: ");
+            ratingBar.setRating(Float.valueOf(userRating) / 2);
+            mUserRating.setText(userRating);
+            mReleaseDate.setText(releaseDate);
+        } else {
+            Toast.makeText(this, "No Movie Details Available", Toast.LENGTH_SHORT).show();
+        }
 
 
         SpeedDialView button = findViewById(R.id.speedDialFavorite);
@@ -257,7 +233,7 @@ public class MovieDetails extends AppCompatActivity {
         trailers = new ArrayList<>();
         trailer_adapter = new Trailer_Adapter(this, trailers);
 
-        recyclerViewTrailer = (RecyclerView) findViewById(R.id.trailer_recycler_view);
+        recyclerViewTrailer = findViewById(R.id.trailer_recycler_view);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerViewTrailer.setLayoutManager(mLayoutManager);
         recyclerViewTrailer.setAdapter(trailer_adapter);
