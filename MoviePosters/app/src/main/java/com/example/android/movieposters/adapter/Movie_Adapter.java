@@ -1,9 +1,7 @@
 package com.example.android.movieposters.adapter;
 
-import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,7 +12,7 @@ import android.widget.ImageView;
 import com.example.android.movieposters.BuildConfig;
 import com.example.android.movieposters.R;
 import com.example.android.movieposters.object.Movie;
-import com.example.android.movieposters.ui.MovieDetails;
+import com.example.android.movieposters.ui.MovieDetailsActivity;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
@@ -70,7 +68,7 @@ public class Movie_Adapter extends RecyclerView.Adapter<Movie_Adapter.ViewHolder
             public void onClick(View view) {
                 mContext = view.getContext();
                 Movie clickedMovie = mMovieList.get(position);
-                Intent intent = new Intent(mContext, MovieDetails.class);
+                Intent intent = new Intent(mContext, MovieDetailsActivity.class);
                 intent.putExtra("movies", clickedMovie);
                 mContext.startActivity(intent);
 

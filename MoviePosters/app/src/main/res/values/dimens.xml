@@ -4,4 +4,8 @@ https://stackoverflow.com/questions/29128178/how-to-use-dimens-xml-in-android
 -->
 <resources>
     <dimen name="top_margin">3dp</dimen>
+    <dimen name="layout_zero_dp">0dp</dimen>
+    <dimen name="img_layout_height">200dp</dimen>
+    <dimen name="margin_zero">0dp</dimen>
+    <dimen name="margin_fifteen">15dp</dimen>
 </resources>

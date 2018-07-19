@@ -2,19 +2,14 @@ package com.example.android.movieposters.ui;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.arch.persistence.room.Delete;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -32,7 +27,6 @@ import com.example.android.movieposters.object.Review;
 import com.example.android.movieposters.object.ReviewList;
 import com.example.android.movieposters.object.Trailer;
 import com.example.android.movieposters.object.TrailerList;
-import com.github.ivbaranov.mfb.MaterialFavoriteButton;
 import com.leinardi.android.speeddial.SpeedDialActionItem;
 import com.leinardi.android.speeddial.SpeedDialView;
 import com.squareup.picasso.Picasso;
@@ -50,9 +44,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 //https://www.coderefer.com/android-parcelable-example/
 
-public class MovieDetails extends AppCompatActivity {
+public class MovieDetailsActivity extends AppCompatActivity {
 
-    public static final String TAG = "MovieDetails";
+    public static final String TAG = "MovieDetailsActivity";
 
     public String MOVIE = "movies";
 
@@ -79,7 +73,7 @@ public class MovieDetails extends AppCompatActivity {
     TextView mTextRating;
     RatingBar ratingBar;
 
-    private final AppCompatActivity activity = MovieDetails.this;
+    private final AppCompatActivity activity = MovieDetailsActivity.this;
 
     String hero_poster, thumbnail, movieName, movieDescription, userRating, releaseDate;
     int movieId;
@@ -91,7 +85,7 @@ public class MovieDetails extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.movie_detail);
 
-        favoriteViewModel = ViewModelProviders.of(MovieDetails.this).get(FavoriteViewModel.class);
+        favoriteViewModel = ViewModelProviders.of(MovieDetailsActivity.this).get(FavoriteViewModel.class);
         mTitle = (TextView) findViewById(R.id.title);
         poster = (ImageView) findViewById(R.id.hero_poster);
         hero = (ImageView) findViewById(R.id.poster);
@@ -110,24 +104,23 @@ public class MovieDetails extends AppCompatActivity {
 
             mMovie = getIntent().getParcelableExtra(MOVIE);
 
+            movieId = mMovie.getId();
+            movieName = mMovie.getOriginal_title();
             hero_poster = mMovie.getBackdrop_path();
             thumbnail = mMovie.getPoster_path();
-
-            movieName = mMovie.getOriginal_title();
             movieDescription = mMovie.getOverview();
             userRating = mMovie.getVote_average();
             releaseDate = mMovie.getRelease_date();
-            movieId = mMovie.getId();
 
             Picasso.with(this)
-                    .load(TMDB_BACKDROP_PATH + mMovie.getPoster_path())
-                    .placeholder(R.color.colorPrimaryDark)
-                    .into(poster);
-
-            Picasso.with(this)
-                    .load(TMDB_IMAGE_PATH + mMovie.getBackdrop_path())
+                    .load(TMDB_IMAGE_PATH + mMovie.getPoster_path())
                     .placeholder(R.color.colorPrimaryDark)
                     .into(hero);
+
+            Picasso.with(this)
+                    .load(TMDB_BACKDROP_PATH + mMovie.getBackdrop_path())
+                    .placeholder(R.color.colorPrimaryDark)
+                    .into(poster);
 
             mTitle.setText(movieName);
             mOverview.setText(movieDescription);
@@ -141,7 +134,7 @@ public class MovieDetails extends AppCompatActivity {
 
 
         SpeedDialView button = findViewById(R.id.speedDialFavorite);
-        button.addActionItem(new SpeedDialActionItem.Builder(R.id.fab_no_label, R.drawable
+        button.addActionItem(new SpeedDialActionItem.Builder(R.id.add_favorite, R.drawable
                 .heart)
                 .setLabel("Add Favorite")
                 .setLabelClickable(true)
@@ -149,7 +142,7 @@ public class MovieDetails extends AppCompatActivity {
                 .create());
 
         button.addActionItem(
-                new SpeedDialActionItem.Builder(R.id.fab_custom_color, R.drawable
+                new SpeedDialActionItem.Builder(R.id.delete_favorite, R.drawable
                         .ic_favorite_border_black_24dp)
                         .setLabel("Remove Favorite")
                         .setLabelClickable(true)
@@ -157,12 +150,14 @@ public class MovieDetails extends AppCompatActivity {
                         .create());
 
         button.setOnActionSelectedListener(new SpeedDialView.OnActionSelectedListener() {
+
             @Override
             public boolean onActionSelected(SpeedDialActionItem speedDialActionItem) {
-                switch (speedDialActionItem.getId()) {
-                    case R.id.fab_no_label:
 
-                        favoriteViewModel.loadMovieById(movieId).observe(MovieDetails.this, new Observer<Movie>() {
+                switch (speedDialActionItem.getId()) {
+                    case R.id.add_favorite:
+
+                        favoriteViewModel.loadMovieById(movieId).observe(MovieDetailsActivity.this, new Observer<Movie>() {
 
                             @Override
                             public void onChanged(@Nullable Movie favMovie) {
@@ -175,16 +170,12 @@ public class MovieDetails extends AppCompatActivity {
                             }
                         });
 
-                        SaveFavorite();
+                        favoriteViewModel.addFavoriteMovie(mMovie);
 
-                        /*FavoriteEntity addFavorite = new FavoriteEntity(movieId, thumbnail, releaseDate,
-                                userRating, movieDescription, hero_poster, movieName);
-                        favoriteViewModel.addFavoriteMovie(addFavorite);*/
                         return false;
+                    case R.id.delete_favorite:
 
-                    case R.id.fab_custom_color:
-
-                        favoriteViewModel.loadMovieById(movieId).observe(MovieDetails.this, new Observer<Movie>() {
+                        favoriteViewModel.loadMovieById(movieId).observe(MovieDetailsActivity.this, new Observer<Movie>() {
 
                             @Override
                             public void onChanged(@Nullable Movie favMovie) {
@@ -197,10 +188,7 @@ public class MovieDetails extends AppCompatActivity {
                             }
                         });
 
-                        DeleteFavorite();
-                        /*FavoriteEntity deleteFavorite = new FavoriteEntity(movieId, thumbnail, releaseDate,
-                                userRating, movieDescription, hero_poster, movieName);
-                        favoriteViewModel.removeFavoriteMovie(deleteFavorite);*/
+                        favoriteViewModel.removeFavoriteMovie(mMovie);
                         return false;
                     default:
                         return false;
@@ -212,22 +200,6 @@ public class MovieDetails extends AppCompatActivity {
         trailerViews();
         reviewViews();
     }
-
-    public void SaveFavorite() {
-        Movie movieAddFavorite = new Movie(movieId, thumbnail, releaseDate,
-                userRating, movieDescription, hero_poster, movieName);
-
-        favoriteViewModel.addFavoriteMovie(movieAddFavorite);
-
-    }
-
-    public void DeleteFavorite() {
-        Movie movieDeleteFavorite = new Movie(movieId, thumbnail, releaseDate,
-                userRating, movieDescription, hero_poster, movieName);
-
-        favoriteViewModel.removeFavoriteMovie(movieDeleteFavorite);
-    }
-
 
     private void trailerViews() {
         trailers = new ArrayList<>();
@@ -279,7 +251,7 @@ public class MovieDetails extends AppCompatActivity {
                 @Override
                 public void onFailure(Call<TrailerList> call, Throwable t) {
                     Log.d("Error", t.getMessage());
-                    Toast.makeText(MovieDetails.this, "Error fetching trailer data", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MovieDetailsActivity.this, "Error fetching trailer data", Toast.LENGTH_SHORT).show();
 
                 }
             });
@@ -340,7 +312,7 @@ public class MovieDetails extends AppCompatActivity {
                 @Override
                 public void onFailure(Call<ReviewList> call, Throwable t) {
                     Log.d("Error", t.getMessage());
-                    Toast.makeText(MovieDetails.this, "Error fetching reviews", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MovieDetailsActivity.this, "Error fetching reviews", Toast.LENGTH_SHORT).show();
 
                 }
             });

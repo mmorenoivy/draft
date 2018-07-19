@@ -41,17 +41,17 @@ public class Movie implements Parcelable{
     @PrimaryKey
     @ColumnInfo(name = "movieId")
     private int id;
-    @ColumnInfo(name = "userRating")
+    @ColumnInfo(name = "vote_average")
     private String vote_average;
-    @ColumnInfo(name = "movieHero")
+    @ColumnInfo(name = "backdrop_path")
     private String backdrop_path;
-    @ColumnInfo(name = "moviePoster")
+    @ColumnInfo(name = "poster_path")
     private String poster_path;
-    @ColumnInfo(name = "movieName")
+    @ColumnInfo(name = "original_title")
     private String original_title;
-    @ColumnInfo(name = "movieOverview")
+    @ColumnInfo(name = "overview")
     private String overview;
-    @ColumnInfo(name = "releaseDate")
+    @ColumnInfo(name = "release_date")
     private String release_date;
 
     public Movie()
@@ -59,27 +59,31 @@ public class Movie implements Parcelable{
 
     }
 
-    public Movie(@NonNull int id, String movieTitle, String movieHero, String moviePoster, String overview, String voteAverage, String releaseDate)
+    public Movie(@NonNull int id,
+                 String movieTitle,
+                 String movieHero, String moviePoster, String overview, String voteAverage, String releaseDate)
     {
 
+        this.id = id;
         this.original_title = movieTitle;
         this.backdrop_path = movieHero;
         this.poster_path = moviePoster;
         this.overview = overview;
         this.vote_average = voteAverage;
         this.release_date = releaseDate;
-        this.id = id;
+
     }
 
     //this part captures the data from the API
     protected Movie(Parcel in) {
+        id=in.readInt();
         original_title = in.readString();
         backdrop_path = in.readString();
         poster_path = in.readString();
         overview = in.readString();
         vote_average = in.readString();
         release_date = in.readString();
-        id=in.readInt();
+
     }
 
     public static final Creator<Movie> CREATOR = new Creator<Movie>() {
@@ -103,20 +107,12 @@ public class Movie implements Parcelable{
         this.id = id;
     }
 
-    public String getVote_average() {
-        return vote_average;
+    public String getOriginal_title() {
+        return original_title;
     }
 
-    public void setVote_average(String voteAverage) {
-        this.vote_average = voteAverage;
-    }
-
-    public String getPoster_path() {
-        return poster_path;
-    }
-
-    public void setPoster_path(String poster_path) {
-        this.poster_path = poster_path;
+    public void setOriginal_title(String original_title) {
+        this.original_title = original_title;
     }
 
     public String getBackdrop_path() {
@@ -127,21 +123,28 @@ public class Movie implements Parcelable{
         this.backdrop_path = backdrop_path;
     }
 
-    public String getOriginal_title() {
-        return original_title;
+    public String getPoster_path() {
+        return poster_path;
     }
 
-    public void setOriginal_title(String original_title) {
-        this.original_title = original_title;
+    public void setPoster_path(String poster_path) {
+        this.poster_path = poster_path;
     }
 
     public String getOverview() {
         return overview;
     }
 
-
     public void setOverview(String overview) {
         this.overview = overview;
+    }
+
+    public String getVote_average() {
+        return vote_average;
+    }
+
+    public void setVote_average(String voteAverage) {
+        this.vote_average = voteAverage;
     }
 
     public String getRelease_date() {
@@ -161,12 +164,12 @@ public class Movie implements Parcelable{
     //this block takes the data from the protected Movie function, and writes it here
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
         dest.writeString(original_title);
-        dest.writeString(poster_path);
         dest.writeString(backdrop_path);
+        dest.writeString(poster_path);
         dest.writeString(overview);
         dest.writeString(vote_average);
         dest.writeString(release_date);
-        dest.writeInt(id);
     }
 }

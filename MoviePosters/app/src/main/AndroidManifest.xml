@@ -18,9 +18,14 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+
         </activity>
 <!--when dealing with intents, add this class-->
-        <activity android:name=".ui.MovieDetails">
+
+        <activity android:parentActivityName=".ui.MovieDetailsActivity"
+            android:name=".ui.MovieDetailsActivity">
+
         </activity>
     </application>
 
