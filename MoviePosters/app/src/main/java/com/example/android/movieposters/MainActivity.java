@@ -3,9 +3,11 @@ package com.example.android.movieposters;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,6 +29,7 @@ import com.example.android.movieposters.object.Movie;
 import com.example.android.movieposters.object.MovieList;
 import com.facebook.stetho.Stetho;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -58,9 +61,16 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class MainActivity extends AppCompatActivity {
+    //implements SharedPreferences.OnSharedPreferenceChangeListener{
 
     private final static String BASE_URL = "https://api.themoviedb.org/3/";
     private final static String TAG = "Movie App";
+
+
+    private Parcelable mListState;
+    private static GridLayoutManager mLayoutManager;
+    private static String LIST_STATE_KEY = "movies";
+
     private boolean flag;
 
     private TextView nullView;
@@ -69,63 +79,120 @@ public class MainActivity extends AppCompatActivity {
     private Movie_Adapter mRecyclerViewAdapter;
     private FavoriteViewModel favoriteViewModel;
     private List<Movie> moviesList;
-    private ProgressBar loader;
-    private Parcelable state;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Stetho.initializeWithDefaults(this);
+        // Stetho.initializeWithDefaults(this);
 
 //        checkConnection();
 
+
+
         mRecyclerView = findViewById(R.id.recycledMovies);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        mLayoutManager = new GridLayoutManager(this, 2);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+
         mRecyclerViewAdapter = new Movie_Adapter(this);
         mRecyclerView.setAdapter(mRecyclerViewAdapter);
+
         favoriteViewModel = ViewModelProviders.of(MainActivity.this).get(FavoriteViewModel.class);
 
-        if (savedInstanceState != null && savedInstanceState.getBoolean("favorites")) {
-            loader.setVisibility(View.GONE);
-            getFavoriteMovies();
-            favorites = true;
-        } else if (isOnline()) {
+        if (savedInstanceState != null) {
+            Log.d(TAG, "onCreate savedInstance is called");
+            mListState = savedInstanceState.getParcelable(LIST_STATE_KEY);
+            mRecyclerView.getLayoutManager().onRestoreInstanceState(mListState);
+            mRecyclerView.setLayoutManager(mLayoutManager);
+        }
+
+
+        if (isOnline()) {
             callMoviePopular();
             Toast.makeText(MainActivity.this, "You are connected to the Internet.", Toast.LENGTH_SHORT).show();
+
+
         } else {
             Toast.makeText(getApplicationContext(), "You have no internet connection. Favorites are displayed", Toast.LENGTH_LONG).show();
             getFavoriteMovies();
             favorites = true;
         }
-
-
-
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        Log.d(TAG, "onPause called.");
-        if (state != null)
-            mRecyclerView.getLayoutManager().onRestoreInstanceState(state);
+    public void onSaveInstanceState(Bundle outState) {
+
+        Log.d(TAG, "onSaveInstanceState is called");
+
+        mListState = mLayoutManager.onSaveInstanceState();
+        outState.putParcelable(LIST_STATE_KEY, mListState);
+        super.onSaveInstanceState(outState);
     }
 
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
-        Log.d(TAG, "onPostResume called.");
+ /*   protected void onRestoreInstanceState(Bundle state) {
+        super.onRestoreInstanceState(state);
+
+        // Retrieve list state and list/item positions
 
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume called.");
-        if (state != null)
-            mRecyclerView.getLayoutManager().onRestoreInstanceState(state);
 
+        if (mListState != null) {
+            mLayoutManager.onRestoreInstanceState(mListState);
+        }
     }
+
+    /*@Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        Log.d(TAG, "onRestoreInstanceState is called");
+        if(state != null)
+        {
+            state = savedInstanceState.getParcelable(MOVIE_STATE);
+            moviesList = savedInstanceState.getParcelableArrayList(MOVIE_LIST_STATE);
+        }
+    }
+
+@Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s){
+        Log.d(TAG, "Preferences updated");
+        checkSortOrder();
+    }
+
+    private void checkSortOrder()
+    {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String sortOrder = preferences.getString(
+                this.getString(R.string.pref_sort_order_key),
+                this.getString(R.string.opt1)
+        );
+        if (sortOrder.equals(this.getString(R.string.opt1))) {
+            Log.d(TAG, "Sorting by most popular");
+            callMoviePopular();
+        } else if (sortOrder.equals(this.getString(R.string.opt3))){
+            Log.d(TAG, "Sorting by favorite");
+            getFavoriteMovies();
+        } else{
+            Log.d(TAG, "Sorting by vote average");
+            callTopRated();
+        }
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        if (moviesList.isEmpty()){
+            checkSortOrder();
+        }else{
+
+            checkSortOrder();
+        }
+    }
+*/
 
 
     public void callMoviePopular() {
@@ -252,25 +319,5 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        Log.d(TAG, "onSaveInstanceState Called." + flag);
-        if (!favorites) {
-            outState.putBoolean("favorites", false);
-        } else {
-            outState.putBoolean("favorites", true);
-        }
 
-        state = mRecyclerView.getLayoutManager().onSaveInstanceState();
-        outState.putParcelable("mRecyclerView", state);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        if(state !=null)
-        {
-            state = savedInstanceState.getParcelable("mRecyclerView");
-        }
-    }
 }
