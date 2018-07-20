@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             Log.d(TAG, "onCreate savedInstance is called");
             mListState = savedInstanceState.getParcelable(LIST_STATE_KEY);
-           mRecyclerView.getLayoutManager().onRestoreInstanceState(mListState);
+            mLayoutManager.onRestoreInstanceState(mListState);
         }
 
 
@@ -120,11 +120,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(Bundle outState) {
 
         Log.d(TAG, "onSaveInstanceState is called");
 
-       mListState = mRecyclerView.getLayoutManager().onSaveInstanceState();
+       mListState = mLayoutManager.onSaveInstanceState();
         outState.putParcelable(LIST_STATE_KEY, mListState);
         super.onSaveInstanceState(outState);
     }
