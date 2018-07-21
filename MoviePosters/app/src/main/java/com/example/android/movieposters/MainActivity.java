@@ -69,9 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Parcelable mListState;
     private static GridLayoutManager mLayoutManager;
-    private static String LIST_STATE_KEY = "movies";
 
-    private boolean flag;
 
     private TextView nullView;
     private boolean favorites;
@@ -87,31 +85,21 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         // Stetho.initializeWithDefaults(this);
 
-//        checkConnection();
-
-
-
         mRecyclerView = findViewById(R.id.recycledMovies);
         mLayoutManager = new GridLayoutManager(this, 2);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-
         mRecyclerViewAdapter = new Movie_Adapter(this);
+        favoriteViewModel = ViewModelProviders.of(MainActivity.this).get(FavoriteViewModel.class);
+        mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mRecyclerViewAdapter);
 
-        favoriteViewModel = ViewModelProviders.of(MainActivity.this).get(FavoriteViewModel.class);
-
-        if (savedInstanceState != null) {
-            Log.d(TAG, "onCreate savedInstance is called");
-            mListState = savedInstanceState.getParcelable(LIST_STATE_KEY);
-            mLayoutManager.onRestoreInstanceState(mListState);
-        }
-
-
+       /* if (savedInstanceState != null) {
+            Log.d(TAG, "onCreate is called");
+            mListState = savedInstanceState.getParcelable("mRecyclerView");
+            mRecyclerView.getLayoutManager().onRestoreInstanceState(mListState);
+        }*/
         if (isOnline()) {
             callMoviePopular();
             Toast.makeText(MainActivity.this, "You are connected to the Internet.", Toast.LENGTH_SHORT).show();
-
-
         } else {
             Toast.makeText(getApplicationContext(), "You have no internet connection. Favorites are displayed", Toast.LENGTH_LONG).show();
             getFavoriteMovies();
@@ -120,19 +108,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
         Log.d(TAG, "onSaveInstanceState is called");
 
-       mListState = mLayoutManager.onSaveInstanceState();
-        outState.putParcelable(LIST_STATE_KEY, mListState);
-        super.onSaveInstanceState(outState);
+        //save the state - this works
+        mListState = mLayoutManager.onSaveInstanceState();
+        outState.putParcelable("mRecyclerView", mListState);
     }
 
- /*   protected void onRestoreInstanceState(Bundle state) {
-        super.onRestoreInstanceState(state);
 
-        // Retrieve list state and list/item positions
+    @Override
+    protected void onRestoreInstanceState(Bundle state) {
+        super.onRestoreInstanceState(state);
+        Log.d(TAG, "onRestoreInstanceState is called");
+        if (state != null) {
+            mListState = state.getParcelable("mRecyclerView");
+            mLayoutManager.onRestoreInstanceState(mListState);
+        }
 
     }
 
@@ -140,10 +133,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        Log.d(TAG, "onResume is called");
         if (mListState != null) {
             mLayoutManager.onRestoreInstanceState(mListState);
         }
     }
+
+
 
     /*@Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -311,7 +307,7 @@ public class MainActivity extends AppCompatActivity {
     public void checkConnection() {
         if (isOnline()) {
             callMoviePopular();
-            flag = true;
+
             Toast.makeText(MainActivity.this, "You are connected to the Internet.", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(MainActivity.this, "You are not connected to the Internet. Check Connection Settings and Refresh", Toast.LENGTH_LONG).show();
