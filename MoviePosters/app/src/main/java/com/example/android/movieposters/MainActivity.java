@@ -3,11 +3,9 @@ package com.example.android.movieposters;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Parcelable;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,8 +15,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,9 +23,7 @@ import com.example.android.movieposters.api.MovieAPI;
 import com.example.android.movieposters.data.FavoriteViewModel;
 import com.example.android.movieposters.object.Movie;
 import com.example.android.movieposters.object.MovieList;
-import com.facebook.stetho.Stetho;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -92,11 +86,12 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mRecyclerViewAdapter);
 
-       /* if (savedInstanceState != null) {
+        if (savedInstanceState != null) {
             Log.d(TAG, "onCreate is called");
             mListState = savedInstanceState.getParcelable("mRecyclerView");
             mRecyclerView.getLayoutManager().onRestoreInstanceState(mListState);
-        }*/
+        }
+
         if (isOnline()) {
             callMoviePopular();
             Toast.makeText(MainActivity.this, "You are connected to the Internet.", Toast.LENGTH_SHORT).show();
@@ -115,8 +110,8 @@ public class MainActivity extends AppCompatActivity {
         //save the state - this works
         mListState = mLayoutManager.onSaveInstanceState();
         outState.putParcelable("mRecyclerView", mListState);
-    }
 
+    }
 
     @Override
     protected void onRestoreInstanceState(Bundle state) {
@@ -128,6 +123,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+/*
+
+
+
 
     @Override
     protected void onResume() {
@@ -138,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
             mLayoutManager.onRestoreInstanceState(mListState);
         }
     }
-
+*/
 
 
     /*@Override
@@ -211,6 +210,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<MovieList> call, Response<MovieList> response) {
                 mRecyclerViewAdapter.setMovieList(response.body().getResults());
+                mRecyclerView.getLayoutManager().onRestoreInstanceState(mListState);
             }
 
             @Override
@@ -241,6 +241,7 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<MovieList> call, Response<MovieList> response) {
 
                 mRecyclerViewAdapter.setMovieList(response.body().getResults());
+                mRecyclerView.getLayoutManager().onRestoreInstanceState(mListState);
             }
 
             @Override
@@ -260,6 +261,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onChanged(@Nullable List<Movie> movies) {
                 mRecyclerViewAdapter.setMovieList(movies);
+                mRecyclerView.getLayoutManager().onRestoreInstanceState(mListState);
             }
         });
         mRecyclerView.setAdapter(mRecyclerViewAdapter);
