@@ -124,6 +124,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
             mTitle.setText(movieName);
             mOverview.setText(movieDescription);
+
             mTextRating.setText("Rating: ");
             ratingBar.setRating(Float.valueOf(userRating) / 2);
             mUserRating.setText(userRating);

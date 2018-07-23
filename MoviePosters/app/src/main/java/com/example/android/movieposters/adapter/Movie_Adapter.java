@@ -41,9 +41,6 @@ public class Movie_Adapter extends RecyclerView.Adapter<Movie_Adapter.ViewHolder
         this.mContext = context;
         this.mInflater = LayoutInflater.from(context);
         this.mMovieList = new ArrayList<>();
-
-
-
     }
 
 

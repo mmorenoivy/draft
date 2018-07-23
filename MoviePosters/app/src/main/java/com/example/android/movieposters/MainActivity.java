@@ -1,5 +1,6 @@
 package com.example.android.movieposters;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -15,6 +16,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +29,7 @@ import com.example.android.movieposters.data.FavoriteViewModel;
 import com.example.android.movieposters.object.Movie;
 import com.example.android.movieposters.object.MovieList;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -57,12 +63,25 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity {
     //implements SharedPreferences.OnSharedPreferenceChangeListener{
 
+    //implements SharedPreferences.OnSharedPreferenceChangeListener{
+
     private final static String BASE_URL = "https://api.themoviedb.org/3/";
     private final static String TAG = "Movie App";
 
 
     private Parcelable mListState;
     private static GridLayoutManager mLayoutManager;
+
+    private static final int MOST_POPULAR = 1;
+    private static final int FAVORITES = 2;
+    private static final int TOP_RATED = 3;
+
+
+
+    private static final String MOVIE_LIST_STATE_KEY = "MOVIE_LIST_STATE";
+    private static final String SORT_BY_KEY = "SORT_BY";
+
+    public int currentSort = MOST_POPULAR;
 
 
     private TextView nullView;
@@ -86,108 +105,67 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mRecyclerViewAdapter);
 
-        if (savedInstanceState != null) {
-            Log.d(TAG, "onCreate is called");
-            mListState = savedInstanceState.getParcelable("mRecyclerView");
-            mRecyclerView.getLayoutManager().onRestoreInstanceState(mListState);
+
+        if(savedInstanceState!=null)
+        {
+            Log.d(TAG, "onCreate is called - savedInstanceState has a value");
+            mListState = savedInstanceState.getParcelable(MOVIE_LIST_STATE_KEY);
+
+            currentSort = savedInstanceState.getInt(SORT_BY_KEY);
+            mLayoutManager.onRestoreInstanceState(mListState);
+           // savedInstanceState.getInt("myCurrentSorting_key", currentSort);
         }
 
         if (isOnline()) {
-            callMoviePopular();
             Toast.makeText(MainActivity.this, "You are connected to the Internet.", Toast.LENGTH_SHORT).show();
+            if(currentSort == MOST_POPULAR)
+            {
+                callMoviePopular();
+            }
+            if(currentSort==TOP_RATED)
+            {
+                callTopRated();
+            }
+            if(currentSort == FAVORITES)
+            {
+                getFavoriteMovies();
+            }
         } else {
             Toast.makeText(getApplicationContext(), "You have no internet connection. Favorites are displayed", Toast.LENGTH_LONG).show();
             getFavoriteMovies();
-            favorites = true;
         }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
+
+        outState.putInt(SORT_BY_KEY, currentSort);
         Log.d(TAG, "onSaveInstanceState is called");
 
         //save the state - this works
         mListState = mLayoutManager.onSaveInstanceState();
-        outState.putParcelable("mRecyclerView", mListState);
+        outState.putParcelable(MOVIE_LIST_STATE_KEY, mListState);
+        super.onSaveInstanceState(outState);
+   }
 
-    }
 
     @Override
     protected void onRestoreInstanceState(Bundle state) {
         super.onRestoreInstanceState(state);
         Log.d(TAG, "onRestoreInstanceState is called");
-        if (state != null) {
-            mListState = state.getParcelable("mRecyclerView");
-            mLayoutManager.onRestoreInstanceState(mListState);
-        }
 
+        currentSort =state.getInt(SORT_BY_KEY);
+        mListState = state.getParcelable(MOVIE_LIST_STATE_KEY);
     }
-/*
-
-
-
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        Log.d(TAG, "onResume is called");
         if (mListState != null) {
             mLayoutManager.onRestoreInstanceState(mListState);
         }
     }
-*/
-
-
-    /*@Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        Log.d(TAG, "onRestoreInstanceState is called");
-        if(state != null)
-        {
-            state = savedInstanceState.getParcelable(MOVIE_STATE);
-            moviesList = savedInstanceState.getParcelableArrayList(MOVIE_LIST_STATE);
-        }
-    }
-
-@Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s){
-        Log.d(TAG, "Preferences updated");
-        checkSortOrder();
-    }
-
-    private void checkSortOrder()
-    {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String sortOrder = preferences.getString(
-                this.getString(R.string.pref_sort_order_key),
-                this.getString(R.string.opt1)
-        );
-        if (sortOrder.equals(this.getString(R.string.opt1))) {
-            Log.d(TAG, "Sorting by most popular");
-            callMoviePopular();
-        } else if (sortOrder.equals(this.getString(R.string.opt3))){
-            Log.d(TAG, "Sorting by favorite");
-            getFavoriteMovies();
-        } else{
-            Log.d(TAG, "Sorting by vote average");
-            callTopRated();
-        }
-    }
-
-    @Override
-    public void onResume(){
-        super.onResume();
-        if (moviesList.isEmpty()){
-            checkSortOrder();
-        }else{
-
-            checkSortOrder();
-        }
-    }
-*/
-
 
     public void callMoviePopular() {
 
@@ -210,7 +188,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<MovieList> call, Response<MovieList> response) {
                 mRecyclerViewAdapter.setMovieList(response.body().getResults());
-                mRecyclerView.getLayoutManager().onRestoreInstanceState(mListState);
             }
 
             @Override
@@ -239,9 +216,7 @@ public class MainActivity extends AppCompatActivity {
         movieListCall.enqueue(new Callback<MovieList>() {
             @Override
             public void onResponse(Call<MovieList> call, Response<MovieList> response) {
-
                 mRecyclerViewAdapter.setMovieList(response.body().getResults());
-                mRecyclerView.getLayoutManager().onRestoreInstanceState(mListState);
             }
 
             @Override
@@ -260,8 +235,10 @@ public class MainActivity extends AppCompatActivity {
         viewModel.loadAllFavorites().observe(this, new Observer<List<Movie>>() {
             @Override
             public void onChanged(@Nullable List<Movie> movies) {
-                mRecyclerViewAdapter.setMovieList(movies);
-                mRecyclerView.getLayoutManager().onRestoreInstanceState(mListState);
+
+                 mRecyclerViewAdapter.setMovieList(movies);
+                 mLayoutManager.onRestoreInstanceState(mListState);
+
             }
         });
         mRecyclerView.setAdapter(mRecyclerViewAdapter);
@@ -283,12 +260,15 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_popular) {
             callMoviePopular();
+            currentSort = MOST_POPULAR;
             return true;
         } else if (item.getItemId() == R.id.menu_top_rated) {
             callTopRated();
+            currentSort = TOP_RATED;
             return true;
         } else if (item.getItemId() == R.id.menu_favorites) {
             getFavoriteMovies();
+            currentSort = FAVORITES;
             return true;
         }
 
@@ -305,16 +285,5 @@ public class MainActivity extends AppCompatActivity {
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
-
-    public void checkConnection() {
-        if (isOnline()) {
-            callMoviePopular();
-
-            Toast.makeText(MainActivity.this, "You are connected to the Internet.", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(MainActivity.this, "You are not connected to the Internet. Check Connection Settings and Refresh", Toast.LENGTH_LONG).show();
-        }
-    }
-
 
 }
