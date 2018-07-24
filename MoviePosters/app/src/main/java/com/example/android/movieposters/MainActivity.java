@@ -61,9 +61,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class MainActivity extends AppCompatActivity {
-    //implements SharedPreferences.OnSharedPreferenceChangeListener{
-
-    //implements SharedPreferences.OnSharedPreferenceChangeListener{
 
     private final static String BASE_URL = "https://api.themoviedb.org/3/";
     private final static String TAG = "Movie App";
@@ -93,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         // Stetho.initializeWithDefaults(this);
@@ -112,8 +109,8 @@ public class MainActivity extends AppCompatActivity {
             mListState = savedInstanceState.getParcelable(MOVIE_LIST_STATE_KEY);
 
             currentSort = savedInstanceState.getInt(SORT_BY_KEY);
-            mLayoutManager.onRestoreInstanceState(mListState);
-           // savedInstanceState.getInt("myCurrentSorting_key", currentSort);
+        //    mRecyclerView.getLayoutManager().onRestoreInstanceState(mListState);
+
         }
 
         if (isOnline()) {
@@ -138,34 +135,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-
+        super.onSaveInstanceState(outState);
         outState.putInt(SORT_BY_KEY, currentSort);
         Log.d(TAG, "onSaveInstanceState is called");
 
         //save the state - this works
-        mListState = mLayoutManager.onSaveInstanceState();
-        outState.putParcelable(MOVIE_LIST_STATE_KEY, mListState);
-        super.onSaveInstanceState(outState);
+        outState.putParcelable(MOVIE_LIST_STATE_KEY, mRecyclerView.getLayoutManager().onSaveInstanceState());
+
    }
-
-
-    @Override
-    protected void onRestoreInstanceState(Bundle state) {
-        super.onRestoreInstanceState(state);
-        Log.d(TAG, "onRestoreInstanceState is called");
-
-        currentSort =state.getInt(SORT_BY_KEY);
-        mListState = state.getParcelable(MOVIE_LIST_STATE_KEY);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (mListState != null) {
-            mLayoutManager.onRestoreInstanceState(mListState);
-        }
-    }
 
     public void callMoviePopular() {
 
@@ -188,6 +165,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<MovieList> call, Response<MovieList> response) {
                 mRecyclerViewAdapter.setMovieList(response.body().getResults());
+                mRecyclerView.getLayoutManager().onRestoreInstanceState(mListState);
             }
 
             @Override
@@ -217,6 +195,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<MovieList> call, Response<MovieList> response) {
                 mRecyclerViewAdapter.setMovieList(response.body().getResults());
+                mRecyclerView.getLayoutManager().onRestoreInstanceState(mListState);
             }
 
             @Override
